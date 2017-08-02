@@ -68,3 +68,17 @@ textarea {
 .fa {
   margin-right: 6px;
 }
+
+// FullCalendar style overrides
+// -------------------------
+.fc-day {
+  cursor: pointer;
+}
+
+.fc-day.active {
+  background-color: #e6fff7;
+}
+
+.modal {
+  display: none;
+}

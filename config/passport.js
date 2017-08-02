@@ -2,7 +2,6 @@ const passport = require('passport');
 const request = require('request');
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-
 const User = require('../models/User');
 
 passport.serializeUser((user, done) => {
@@ -18,12 +17,15 @@ passport.deserializeUser((id, done) => {
 /**
  * Sign in with Google.
  */
+console.log(process.env.GOOGLE_ID);
+
 passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_ID,
-  clientSecret: process.env.GOOGLE_SECRET,
-  callbackURL: '/auth/google/callback',
-  passReqToCallback: true
-}, (req, accessToken, refreshToken, profile, done) => {
+    clientID: process.env.GOOGLE_ID,
+    clientSecret: process.env.GOOGLE_SECRET,
+    callbackURL: '/auth/google/callback',
+    passReqToCallback: true
+  },
+  (req, accessToken, refreshToken, profile, done) => {
   if (req.user) {
     User.findOne({ google: profile.id }, (err, existingUser) => {
       if (err) { return done(err); }

@@ -6,10 +6,15 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     meta(name='theme-color' content='#4DA5F4')
     meta(name='csrf-token', content=_csrf)
-    title #{title} - Hackathon Starter
+    title #{title}
     link(rel='shortcut icon', href='/favicon.png')
     link(rel='stylesheet', href='/css/main.css')
-
+    link(rel='stylesheet', href='/css/fullcalendar.min.css')
+      
+    //- script(src='/js/lib/jquery-3.1.1.min.js')
+    script(src='https://code.jquery.com/jquery-3.1.1.min.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment.min.js') 
+    
   body
     include partials/header
 
@@ -18,8 +23,9 @@ html
       block content
 
     include partials/footer
-
-    script(src='/js/lib/jquery-3.1.1.min.js')
+  
+    // Note: fullcalendar 3.4.0 has bugs. Took CSS and JS files from 3.3.1
+    script(src='/js/fullcalendar.min.js')
     script(src='/js/lib/bootstrap.min.js')
     script(src='/js/main.js')
 

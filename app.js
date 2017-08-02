@@ -22,14 +22,14 @@ const sass = require('node-sass-middleware');
 /**
  * Load environment variables from .env file, where API keys and passwords are configured.
  */
-dotenv.load({ path: '.env.example' });
+dotenv.load({ path: '.env' });
 
 /**
  * Controllers (route handlers).
  */
 const homeController = require('./controllers/home');
 const userController = require('./controllers/user');
-const apiController = require('./controllers/api');
+const logController = require('./controllers/log');
 const contactController = require('./controllers/contact');
 
 /**
@@ -135,7 +135,7 @@ app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userControl
 /**
  * API examples routes.
  */
-app.get('/api', apiController.getApi);
+app.get('/log', logController.getLog);
 
 /**
  * OAuth authentication routes. (Sign in)
