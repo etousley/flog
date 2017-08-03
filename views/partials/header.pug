@@ -14,7 +14,7 @@
         li(class=(title == 'Home') ? 'active' : undefined)
           a(href='/') Home
         li(class=(title == 'My Log') ? 'active' : undefined)
-          a(href='/log') My Log
+          a(href='/log/' + user.email) My Log
         li(class=(title == 'Contact') ? 'active' : undefined)
           a(href='/contact') Contact
         li

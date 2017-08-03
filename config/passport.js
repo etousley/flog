@@ -17,8 +17,6 @@ passport.deserializeUser((id, done) => {
 /**
  * Sign in with Google.
  */
-console.log(process.env.GOOGLE_ID);
-
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_ID,
     clientSecret: process.env.GOOGLE_SECRET,
@@ -90,10 +88,23 @@ exports.isAuthenticated = (req, res, next) => {
  */
 exports.isAuthorized = (req, res, next) => {
   const provider = req.path.split('/').slice(-1)[0];
+  console.log('provider ' + provider);
   const token = req.user.tokens.find(token => token.kind === provider);
   if (token) {
     next();
   } else {
     res.redirect(`/auth/${provider}`);
   }
+};
+
+/**
+ * Login Required middleware - user making request must be same user whose email
+ * is in the request
+ */
+exports.isAuthenticatedOwner = (req, res, next) => {
+  const ownerEmail = req.path.split('/').slice(-1)[0];
+  if (req.isAuthenticated() && req.user.email === ownerEmail) {
+    return next();
+  }
+  res.status(401).send("401 Forbidden: You don't have permission to make this request");
 };
