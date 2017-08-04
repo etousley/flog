@@ -6,17 +6,34 @@
 // TODO: save log entry
 
 /**
+ * Get log data from REST API
+ * E.g. queryParams = {'user': 'me@domain.com', 'from': '2017-08-01', 'to': '2017-09-01'};
+ */
+getLogEntries = (queryParams) => {
+  let url = '/api/log?' + jQuery.param(queryParams);
+  console.log(url);
+
+  $.get(url, function(data) {
+    return data;
+  })
+}
+
+
+/**
  * Render and display modal to reflect data (date, user, existing activities)
  */
-exports.drawLogEntryModal = (email, date) => {
+drawLogEntryModal = (email, date) => {
   const modal = $('#log-entry-modal');
   const modalTitle = modal.find('.modal-title');
   const modalBody = modal.find('.modal-body');
-  let user = undefined;
-  let isOwner = undeined;
 
-  fetch('/log/' + )
-
+  const testQueryParams = {
+    'user': 'elias.tousley@readingplus.com',
+    'from': '2017-08-01',
+    'to': '2017-09-01'
+  };
+  const testData = getLogEntries(testQueryParams);
+  console.log(testData);
 
   modalTitle.html('Log: ' + data.date);
 

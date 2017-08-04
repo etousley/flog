@@ -29,7 +29,7 @@ dotenv.load({ path: '.env' });
  */
 const homeController = require('./controllers/home');
 const userController = require('./controllers/user');
-const logController = require('./controllers/log');
+const logEntryController = require('./controllers/logEntry');
 const contactController = require('./controllers/contact');
 
 /**
@@ -131,12 +131,28 @@ app.post('/account/profile', passportConfig.isAuthenticated, userController.post
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
+app.get('/log/:id', passportConfig.isAuthenticated, logEntryController.getLog);
 
 /**
- * Log routes
+ * REST API routes
  */
-app.get('/log/:email', passportConfig.isAuthenticated, logController.getUser);
-app.post('/log/:email/save/:date', passportConfig.isAuthenticatedOwner, logController.saveLogEntry);
+// Get all log entries. Can filter with query string, see controller method
+app.get('/api/log', passportConfig.isAuthenticated, logEntryController.getLogEntries);
+
+// Get log entry by id
+app.get('/api/log/:id', passportConfig.isAuthenticated, logEntryController.getLogEntry);
+
+// Update a single log entry
+app.put('/api/log/:id', passportConfig.isAuthenticatedOwner, logEntryController.updateLogEntry);
+
+// Create a new log entry
+app.post('/api/log', passportConfig.isAuthenticatedOwner, logEntryController.createLogEntry);
+
+// Delete a single log entry
+app.delete('/api/log/:id', passportConfig.isAuthenticatedOwner, logEntryController.deleteLogEntry);
+
+// Get all activity definitions
+app.get('/api/activity', passportConfig.isAuthenticated, logEntryController.getActivityDefinitions);
 
 /**
  * OAuth authentication routes. (Sign in)

@@ -98,8 +98,7 @@ exports.isAuthorized = (req, res, next) => {
 };
 
 /**
- * Login Required middleware - user making request must be same user whose email
- * is in the request
+ * Login Required middleware - user making request must be same user whose email is in the request
  */
 exports.isAuthenticatedOwner = (req, res, next) => {
   const ownerEmail = req.path.split('/').slice(-1)[0];
