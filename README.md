@@ -1,9 +1,9 @@
 flog
 =======================
 
-A simple webapp to track employees' fitness progress for a workplace wellness initiative
+A webapp to track employees' fitness progress for a workplace wellness initiative
 
-Based on [hackathon-starter](https://github.com/sahat/hackathon-starter) boilerplate app
+Based on the [hackathon-starter](https://github.com/sahat/hackathon-starter) boilerplate
 
 
 Notes

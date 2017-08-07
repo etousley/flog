@@ -13,8 +13,9 @@
       ul.nav.navbar-nav
         li(class=(title == 'Home') ? 'active' : undefined)
           a(href='/') Home
-        li(class=(title == 'My Log') ? 'active' : undefined)
-          a(href='/log/' + user.email) My Log
+        if user
+          li(class=(title == 'My Log') ? 'active' : undefined)
+            a(href='/log/' + user.email) My Log
         li(class=(title == 'Contact') ? 'active' : undefined)
           a(href='/contact') Contact
         li

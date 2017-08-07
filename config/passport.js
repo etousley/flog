@@ -46,30 +46,36 @@ passport.use(new GoogleStrategy({
       }
     });
   } else {
-    User.findOne({ google: profile.id }, (err, existingUser) => {
-      if (err) { return done(err); }
-      if (existingUser) {
-        return done(null, existingUser);
-      }
-      User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+    if ( profile.emails[0].value.endsWith('readingplus.com') ) {
+      User.findOne({ google: profile.id }, (err, existingUser) => {
         if (err) { return done(err); }
-        if (existingEmailUser) {
-          req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Google manually from Account Settings.' });
-          done(err);
-        } else {
-          const user = new User();
-          user.email = profile.emails[0].value;
-          user.google = profile.id;
-          user.tokens.push({ kind: 'google', accessToken });
-          user.profile.name = profile.displayName;
-          user.profile.gender = profile._json.gender;
-          user.profile.picture = profile._json.image.url;
-          user.save((err) => {
-            done(err, user);
-          });
+        if (existingUser) {
+          return done(null, existingUser);
         }
+        User.findOne({ email: profile.emails[0].value }, (err, existingEmailUser) => {
+          if (err) { return done(err); }
+          if (existingEmailUser) {
+            req.flash('errors', { msg: 'There is already an account using this email address. Sign in to that account and link it with Google manually from Account Settings.' });
+            done(err);
+          } else {
+            const user = new User();
+            user.email = profile.emails[0].value;
+            user.google = profile.id;
+            user.tokens.push({ kind: 'google', accessToken });
+            user.profile.name = profile.displayName;
+            user.profile.gender = profile._json.gender;
+            user.profile.picture = profile._json.image.url;
+            user.save((err) => {
+              done(err, user);
+            });
+          }
+        });
       });
-    });
+    } else {
+      const msg = 'Access Denied. Please log in using a readingplus.com email address.';
+      req.flash('errors', { msg: msg });
+      done(new Error(msg));
+    }
   }
 }));
 

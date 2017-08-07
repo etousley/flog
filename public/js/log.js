@@ -1,20 +1,51 @@
 
-// TODO: get log data
-// TODO: map log data to DOM calendar
 // TODO: view existing log entry
 // TODO: create/edit log entry (in modal?)
 // TODO: save log entry
 
-/**
- * Get log data from REST API
- * E.g. queryParams = {'user': 'me@domain.com', 'from': '2017-08-01', 'to': '2017-09-01'};
- */
-getLogEntries = (queryParams) => {
-  let url = '/api/log?' + jQuery.param(queryParams);
-  console.log(url);
 
+/**
+ * Get log data from REST API, then draw them to calendar
+ */
+fillLogEntries = () => {
+  const dayElems = $('.fc-day');
+  const email = window.location.href.split("/").slice(-1)[0];
+  const startDate = dayElems[0].dataset.date;
+  const endDate = dayElems[dayElems.length - 1].dataset.date;
+  const ignoreDataKeys = {'_id': 1, 'user': 1}
+  let entryTitle = undefined;
+  let entryElem = undefined;
+
+  // Build query parameters for GET request
+  const url = '/api/log?' + jQuery.param({
+    "email": email,
+    "from": startDate,
+    "to": endDate
+  });
+
+  // Map data to calendar days
+  // Could probably do this more efficiently...
   $.get(url, function(data) {
-    return data;
+    for (entry of data.data) {
+      for (dayElem of dayElems) {
+        if (entry.date.slice(0, 10) === dayElem.dataset.date) {
+          entryTitle = entry.title || (entry.activity + " (" + entry.durationValue + " " + entry.durationUnit + "s)");
+          entryElem = document.createElement("div");
+          entryElem.className = "log-entry-title";
+          entryElem.textContent = entryTitle;
+
+          // Add data as data-foo attributes to the event element (probably a better way...)
+          for (let [key, value] of Object.entries(entry)) {
+            if ( !(key in ignoreDataKeys) )  {
+              entryElem.dataset[key] = value;
+            }
+          }
+
+          dayElem.appendChild(entryElem);
+          break;
+        }
+      }
+    }
   })
 }
 
@@ -22,44 +53,51 @@ getLogEntries = (queryParams) => {
 /**
  * Render and display modal to reflect data (date, user, existing activities)
  */
-drawLogEntryModal = (email, date) => {
-  const modal = $('#log-entry-modal');
-  const modalTitle = modal.find('.modal-title');
-  const modalBody = modal.find('.modal-body');
+drawLogEntryModal = (clickedDayElem) => {
+  const entryElem = clickedDayElem.find('.log-entry-title')[0];
+  let modal = $('#log-entry-modal');
+  let modalDate = modal.find('.entry-date');
+  let modalTitle = modal.find('.entry-title-input');
+  let modalActivity = modal.find('.entry-activity-input');
+  let modalDurationValue = modal.find('.entry-duration-value-input');
+  let modalDescription = modal.find('.entry-description-input');
 
-  const testQueryParams = {
-    'user': 'elias.tousley@readingplus.com',
-    'from': '2017-08-01',
-    'to': '2017-09-01'
-  };
-  const testData = getLogEntries(testQueryParams);
-  console.log(testData);
-
-  modalTitle.html('Log: ' + data.date);
+  modalDate.html( entryElem.dataset.date.slice(0, 10) );
+  modalTitle.val(entryElem.dataset.title);
+  modalActivity.html(entryElem.dataset.activity); // TODO: this is wrong
+  modalDurationValue.val(entryElem.dataset.durationValue);
+  modalDescription.val(entryElem.dataset.description);
 
   modal.modal('show');
 };
 
 
-
-
+/**
+ * Do stuff when page loads
+ */
 $(document).ready(function() {
+  let visibleDates = undefined;
+
   // Hide modal
   $('#log-entry-modal').modal('hide');
 
-   // Draw calendar
+  // Draw calendar
   $('#calendar').fullCalendar({
     // put options and callbacks here
   });
 
+  // Retrieve and insert log entries for visible date range
+  // TODO: this should also get called when month arrows are clicked
+  fillLogEntries();
+
   $('.fc-day').on('click touch', function () {
-    const clickedDate = $(this).attr('data-date');
+    const clickedDayElem = $(this);
 
     // Mark active day
     $('.fc-day').removeClass('active');
-    $(this).addClass('active');
+    clickedDayElem.addClass('active');
 
-    drawLogEntryModal(clickedDate);
+    drawLogEntryModal(clickedDayElem);
     // $('#log-entry-modal').modal('show');
   });
 });

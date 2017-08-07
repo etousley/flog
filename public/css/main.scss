@@ -30,6 +30,11 @@ footer {
   }
 }
 
+.vert-spaced-sm {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
 // Input Fields
 // -------------------------
 
@@ -77,4 +82,16 @@ textarea {
 
 .fc-day.active {
   background-color: #e6fff7;
+}
+
+// Log entry modal styles
+// -------------------------
+.modal-title {
+  max-width: 90%;
+  float: left;
+}
+
+.modal-header > .close {
+  max-width: 10%;
+  float: rightt;
 }
