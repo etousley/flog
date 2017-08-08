@@ -1,33 +1,64 @@
 extends ../layout
 
 block content
-  h2 My Log
+  h2 #{logOwner.email.split("@")[0]}'s Log
+  
+  //- pre 
+  //-   each val, key in activities
+  //-     p= key + ": " + JSON.stringify(val)
   hr
     
-  //- Bootstrap modal behavior gets weird if it's not in a container div
+  //- Required modal container
   .modal-container
-  
     .modal.fade#log-entry-modal
-      .modal-dialog(role='document', aria-labelledby="logEntryModal" aria-hidden="true")
+      .modal-dialog(role="document", aria-labelledby="logEntryModal" aria-hidden="true")
         .modal-content
+          
           .modal-header
               h4.modal-title Log entry:
-              button.close(type='button', data-dismiss='modal', aria-label='Close')
-                span(aria-hidden='true') ×
-          .modal-body
-            .input-group.vert-spaced-sm
-              span.input-group-addon.entry-date {{ date }}
-              input.form-control.entry-title-input(type='text' placeholder='Title of log entry (optional)')
-            .input-group.vert-spaced-sm
-              .dropdown-menu.entry-activity-input(placeholder='Activity type...')
-            .input-group.vert-spaced-sm 
-              input.form-control.entry-duration-value-input(type='text' placeholder='Minutes (e.g. 20)')
-              span.input-group-addon minutes
-            span.vert-spaced-sm
-              textarea.form-control.entry-description-input(placeholder="Description (optional)")
-          .modal-footer
-            button.btn.btn-primary(type='button') Save changes
-            button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+              button.close(type="button", data-dismiss="modal", aria-label="Close")
+                span(aria-hidden="true") ×
+                
+          //- Editable modal for log owner
+          if user.email === logOwner.email
+            .modal-body
+              .input-group.vert-spaced-sm
+                span.input-group-addon.entry-date {{ date }}
+                input.form-control.entry-title-input(type="text" placeholder="Title of log entry (optional)")
+              //- Required dropdown containe
+              .dropdown 
+                .btn-group
+                  button.btn.btn-default#btn-activity(type="button") Activity
+                  button.btn.btn-default.dropdown-toggle.dropdown-toggle-split(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false")
+                    span.caret
+                  ul.dropdown-menu#activity-dropdown
+                    each properties, name in activities
+                      li
+                        a.dropdown-item(href="#")= name
+              .input-group.vert-spaced-sm
+                input.form-control.entry-duration-value-input(type="text" placeholder="Minutes (e.g. 20)")
+                span.input-group-addon minutes
+              span.vert-spaced-sm
+                textarea.form-control.entry-description-input(placeholder="Description (optional)")
+            .modal-footer
+              button.btn.btn-primary.save-entry(type="button") Save changes
+              button.btn.btn-secondary(type="button", data-dismiss="modal") Close
+              
+          //- Read-only modal for non-owners
+          else 
+            .modal-body
+              .input-group.vert-spaced-sm
+                span.input-group-addon.entry-date {{ date }}
+                .form-control.entry-title(type="text" placeholder="Title of log entry (optional)")
+              .input-group.vert-spaced-sm
+                .entry-activity(placeholder="Activity type...")
+              .input-group.vert-spaced-sm 
+                .entry-duration-value(type="text" placeholder="Minutes (e.g. 20)")
+                .input-group-addon minutes
+              span.vert-spaced-sm
+                .entry-description(placeholder="Description (optional)")
+            .modal-footer
+              button.btn.btn-secondary(type="button", data-dismiss="modal") Close
             
   div#calendar
 

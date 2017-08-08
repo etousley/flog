@@ -19,7 +19,10 @@ exports.getActivityDefinitions = (req, res) => {
  */
 exports.getLog = (req, res) => {
   res.render('log/index', {
-    title: 'My Log'
+    title: 'My Log',
+    user: req.user,
+    logOwner: {email: req.url.split("/").slice(-1)[0]},
+    activities: lookups.activityDefinitions
   });
 };
 
@@ -50,7 +53,7 @@ exports.getLogEntries = (req, res) => {
     }
   }
 
-  console.log('filter: ' + JSON.stringify(filter));
+  // console.log('filter: ' + JSON.stringify(filter));
 
   LogEntry.find(filter, function(err, activities) {
     res.send({ data: activities });
@@ -78,10 +81,17 @@ exports.getLogEntry = (req, res) => {
  */
 exports.updateLogEntry = (req, res) => {
   const id = req.params.id;
-  const updateData = req.body.logEntry;
+  const requester = req.user.email;
+  const updatedEntry = req.body.data;
 
-  LogEntry.findByIdAndUpdate(id, updateData, function(err, logEntry) {
-    res.send({ data: logEntry });
+  LogEntry.findById(id, function(err, logEntry) {
+    if (logEntry.user === requester) {
+      LogEntry.findByIdAndUpdate(id, updatedEntry, function(err, logEntry) {
+        res.send({ data: logEntry });
+      });
+    } else {
+      res.status(401).send("401 Forbidden: You aren't the owner of this log entry");
+    }
   });
 };
 
@@ -93,10 +103,16 @@ exports.updateLogEntry = (req, res) => {
  */
 exports.createLogEntry = (req, res) => {
   const newEntry = req.body.logEntry;
+  const requesterEmail = req.user.email;
+  const ownerEmail = newEntry.user;
 
-  LogEntry.save(newEntry, function(err, logEntry) {
-    res.send({ data: logEntry });
-  });
+  if (requesterEmail === ownerEmail) {
+    LogEntry.save(newEntry, function(err, logEntry) {
+      res.send({ data: logEntry });
+    });
+  } else {
+    res.status(401).send("401 Forbidden: You aren't the owner of this log entry");
+  }
 };
 
 
@@ -107,9 +123,16 @@ exports.createLogEntry = (req, res) => {
  */
 exports.deleteLogEntry = (req, res) => {
   const id = req.params.id;
+  const requesterEmail = req.user.email;
 
-  LogEntry.findById(id).remove(function(err) {
-    res.status(200).send("Success: Deleted logEntry document ID: " + id);
+  LogEntry.findById(id, function(err, logEntry) {
+    if (logEntry.user === requester) {
+      LogEntry.findById(id).remove(function(err) {
+        res.status(200).send("200 Success: Deleted log entry with id = " + id);
+      });
+    } else {
+      res.status(401).send("401 Forbidden: You aren't the owner of this log entry");
+    }
   });
 };
 

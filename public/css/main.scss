@@ -80,8 +80,24 @@ textarea {
   cursor: pointer;
 }
 
-.fc-day.active {
+.fc-day:hover {
   background-color: #e6fff7;
+}
+
+.fc-day-top {
+  cursor: pointer;
+}
+
+.fc-row .fc-content-skeleton {
+  cursor: pointer;
+}
+
+.fc .log-entry-btn {
+  display: block;
+  margin-top: 2em;
+  margin-right: auto;
+  margin-bottom: 1em;
+  margin-left: auto;
 }
 
 // Log entry modal styles
@@ -93,5 +109,9 @@ textarea {
 
 .modal-header > .close {
   max-width: 10%;
-  float: rightt;
+  float: right;
 }
+
+// .entry-duration-value-input {
+//   max-width: 100px;
+// }

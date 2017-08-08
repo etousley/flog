@@ -1,7 +1,27 @@
 
-// TODO: view existing log entry
-// TODO: create/edit log entry (in modal?)
-// TODO: save log entry
+// Global variables used by multiple functions
+const CSRF_HEADER = 'X-CSRF-Token';
+
+let modal = $('#log-entry-modal');
+let modalDate = modal.find('.entry-date');
+let modalTitle = modal.find('.entry-title-input');
+let modalActivityButton = modal.find('#btn-activity');
+let modalDescription = modal.find('.entry-description-input');
+let modalDurationValue = modal.find('.entry-duration-value-input');
+let activeEntryData = {};
+
+
+/**
+ * Set AJAX prefilter so that HTTP requests get through Express.js CSRF protection
+ * Credit: https://stackoverflow.com/a/18041849
+ */
+setCSRFToken = (securityToken) => {
+  jQuery.ajaxPrefilter(function (options, _, xhr) {
+    if (!xhr.crossDomain) {
+      xhr.setRequestHeader(CSRF_HEADER, securityToken);
+    }
+  });
+};
 
 
 /**
@@ -9,36 +29,30 @@
  */
 fillLogEntries = () => {
   const dayElems = $('.fc-day');
-  const email = window.location.href.split("/").slice(-1)[0];
+  const email = window.location.href.split('/')[-1];
   const startDate = dayElems[0].dataset.date;
   const endDate = dayElems[dayElems.length - 1].dataset.date;
-  const ignoreDataKeys = {'_id': 1, 'user': 1}
-  let entryTitle = undefined;
-  let entryElem = undefined;
-
-  // Build query parameters for GET request
-  const url = '/api/log?' + jQuery.param({
+  const getLogEntriesUrl = '/api/log?' + jQuery.param({
     "email": email,
     "from": startDate,
     "to": endDate
   });
+  let entryElem = undefined;
+
 
   // Map data to calendar days
   // Could probably do this more efficiently...
-  $.get(url, function(data) {
+  $.get(getLogEntriesUrl, function(data) {
     for (entry of data.data) {
       for (dayElem of dayElems) {
         if (entry.date.slice(0, 10) === dayElem.dataset.date) {
-          entryTitle = entry.title || (entry.activity + " (" + entry.durationValue + " " + entry.durationUnit + "s)");
-          entryElem = document.createElement("div");
-          entryElem.className = "log-entry-title";
-          entryElem.textContent = entryTitle;
+          entryElem = document.createElement("button");
+          entryElem.className = "btn btn-sm btn-primary log-entry-btn";
+          entryElem.textContent = entry.title || (entry.activity + " (" + entry.durationValue + " " + entry.durationUnit + "s)");;
 
-          // Add data as data-foo attributes to the event element (probably a better way...)
+          // Add data as data-foo attributes to the event element (there's probably a better way...)
           for (let [key, value] of Object.entries(entry)) {
-            if ( !(key in ignoreDataKeys) )  {
-              entryElem.dataset[key] = value;
-            }
+            entryElem.dataset[key] = value;
           }
 
           dayElem.appendChild(entryElem);
@@ -46,7 +60,7 @@ fillLogEntries = () => {
         }
       }
     }
-  })
+  });
 }
 
 
@@ -54,21 +68,65 @@ fillLogEntries = () => {
  * Render and display modal to reflect data (date, user, existing activities)
  */
 drawLogEntryModal = (clickedDayElem) => {
-  const entryElem = clickedDayElem.find('.log-entry-title')[0];
-  let modal = $('#log-entry-modal');
-  let modalDate = modal.find('.entry-date');
-  let modalTitle = modal.find('.entry-title-input');
-  let modalActivity = modal.find('.entry-activity-input');
-  let modalDurationValue = modal.find('.entry-duration-value-input');
-  let modalDescription = modal.find('.entry-description-input');
-
-  modalDate.html( entryElem.dataset.date.slice(0, 10) );
-  modalTitle.val(entryElem.dataset.title);
-  modalActivity.html(entryElem.dataset.activity); // TODO: this is wrong
-  modalDurationValue.val(entryElem.dataset.durationValue);
-  modalDescription.val(entryElem.dataset.description);
+  modalDate.html( activeEntryData.date.slice(0, 10) );
+  modalTitle.val(activeEntryData.title);
+  modalActivityButton.html(activeEntryData.activity);
+  modalActivityButton.val(activeEntryData.activity);
+  modalDescription.val(activeEntryData.description);
+  modalDurationValue.val(activeEntryData.durationValue);
 
   modal.modal('show');
+};
+
+
+/**
+ * Create or update log entry
+ */
+ saveLogEntry = () => {
+   const newEntryData = {
+     "date": activeEntryData.date,
+     "title": modalTitle.val(),
+     "activity": modalActivityButton.html(),
+     "description": modalDescription.val(),
+     "durationValue": modalDurationValue.val()
+   };
+   updateActiveEntryData(newEntryData);
+
+   if (activeEntryData._id) {
+     // If there's already an _id, do a PUT (update)
+     $.ajax({
+       url: '/api/log/' + activeEntryData._id,
+       type: 'PUT',
+       data: {"data": activeEntryData},
+       success: function(data) {
+         console.log('Updated entry: ' + JSON.stringify(activeEntryData));
+       }
+     });
+   } else {
+     // If there's no _id, do a POST (create)
+     $.ajax({
+       url: '/api/log/',
+       type: 'POST',
+       data: {"data": activeEntryData},
+       success: function(data) {
+         console.log('Created entry: ' + JSON.stringify(activeEntryData));
+       }
+     });
+   }
+ };
+
+
+ /**
+  * Update activeEntryData to reflect current state of log entry modal
+  */
+updateActiveEntryData = (newEntryData) => {
+  if (newEntryData === undefined || Object.keys(newEntryData).length === 0) {
+    console.log("Missing newEntryData: " + newEntryData);
+    return;
+  }
+  for ( let [key, val] of Object.entries(newEntryData) ) {
+    activeEntryData[key] = val;
+  };
 };
 
 
@@ -76,7 +134,7 @@ drawLogEntryModal = (clickedDayElem) => {
  * Do stuff when page loads
  */
 $(document).ready(function() {
-  let visibleDates = undefined;
+  setCSRFToken($('meta[name="csrf-token"]').attr('content'));
 
   // Hide modal
   $('#log-entry-modal').modal('hide');
@@ -90,14 +148,21 @@ $(document).ready(function() {
   // TODO: this should also get called when month arrows are clicked
   fillLogEntries();
 
-  $('.fc-day').on('click touch', function () {
-    const clickedDayElem = $(this);
+  // Show log entry when date is clicked
+  $('.fc-day, .fc-day-top, .log-entry-btn').on('click touch', function () {
+    event.stopPropagation();  // Need this to click on an entry button inside a clickable day cell
+    updateActiveEntryData(event.target.dataset);
+    drawLogEntryModal(event.target);
+  });
 
-    // Mark active day
-    $('.fc-day').removeClass('active');
-    clickedDayElem.addClass('active');
+  // Save log entry when Save button is clicked
+  $('.save-entry').on('click touch', function() {
+    saveLogEntry();
+  });
 
-    drawLogEntryModal(clickedDayElem);
-    // $('#log-entry-modal').modal('show');
+  // Update selected value (and html) when a dropdown option is clicked
+  $('#activity-dropdown li > a').on('click touch', function() {
+    $('#btn-activity').html(this.innerHTML);
+    $('#btn-activity').val(this.innerHTML);
   });
 });

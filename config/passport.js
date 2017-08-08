@@ -102,14 +102,3 @@ exports.isAuthorized = (req, res, next) => {
     res.redirect(`/auth/${provider}`);
   }
 };
-
-/**
- * Login Required middleware - user making request must be same user whose email is in the request
- */
-exports.isAuthenticatedOwner = (req, res, next) => {
-  const ownerEmail = req.path.split('/').slice(-1)[0];
-  if (req.isAuthenticated() && req.user.email === ownerEmail) {
-    return next();
-  }
-  res.status(401).send("401 Forbidden: You don't have permission to make this request");
-};

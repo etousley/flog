@@ -143,13 +143,13 @@ app.get('/api/log', passportConfig.isAuthenticated, logEntryController.getLogEnt
 app.get('/api/log/:id', passportConfig.isAuthenticated, logEntryController.getLogEntry);
 
 // Update a single log entry
-app.put('/api/log/:id', passportConfig.isAuthenticatedOwner, logEntryController.updateLogEntry);
+app.put('/api/log/:id', passportConfig.isAuthenticated, logEntryController.updateLogEntry);
 
 // Create a new log entry
-app.post('/api/log', passportConfig.isAuthenticatedOwner, logEntryController.createLogEntry);
+app.post('/api/log', passportConfig.isAuthenticated, logEntryController.createLogEntry);
 
 // Delete a single log entry
-app.delete('/api/log/:id', passportConfig.isAuthenticatedOwner, logEntryController.deleteLogEntry);
+app.delete('/api/log/:id', passportConfig.isAuthenticated, logEntryController.deleteLogEntry);
 
 // Get all activity definitions
 app.get('/api/activity', passportConfig.isAuthenticated, logEntryController.getActivityDefinitions);
