@@ -22,26 +22,28 @@ block content
           //- Editable modal for log owner
           if user.email === logOwner.email
             .modal-body
+              .alert.modal-alert.info(role="alert")
               .input-group.vert-spaced-sm
                 span.input-group-addon.entry-date {{ date }}
                 input.form-control.entry-title-input(type="text" placeholder="Title of log entry (optional)")
-              //- Required dropdown containe
+              //- Required dropdown container
               .dropdown 
                 .btn-group
                   button.btn.btn-default#btn-activity(type="button") Activity
                   button.btn.btn-default.dropdown-toggle.dropdown-toggle-split(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false")
                     span.caret
                   ul.dropdown-menu#activity-dropdown
-                    each properties, name in activities
+                    each attrs, name in activities
                       li
-                        a.dropdown-item(href="#")= name
+                        a.dropdown-item(href="#" data-duration-unit=attrs.durationUnit data-points=attrs.points data-category=attrs.category)= name
               .input-group.vert-spaced-sm
                 input.form-control.entry-duration-value-input(type="text" placeholder="Minutes (e.g. 20)")
-                span.input-group-addon minutes
+                span.input-group-addon.entry-duration-unit minutes
               span.vert-spaced-sm
                 textarea.form-control.entry-description-input(placeholder="Description (optional)")
             .modal-footer
-              button.btn.btn-primary.save-entry(type="button") Save changes
+              button.btn.btn-primary.save-entry(type="button") Save
+              button.btn.btn-warning.delete-entry(type="button") Delete
               button.btn.btn-secondary(type="button", data-dismiss="modal") Close
               
           //- Read-only modal for non-owners

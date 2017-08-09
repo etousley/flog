@@ -55,8 +55,12 @@ exports.getLogEntries = (req, res) => {
 
   // console.log('filter: ' + JSON.stringify(filter));
 
-  LogEntry.find(filter, function(err, activities) {
-    res.send({ data: activities });
+  LogEntry.find(filter, function(err, logEntries) {
+    if (err) {
+      res.status(500).send({"error": err})
+    } else {
+      res.send({ "data": logEntries });
+    }
   });
 };
 
@@ -69,28 +73,13 @@ exports.getLogEntry = (req, res) => {
   const id = req.params.id;
 
   LogEntry.findById(id, function(err, logEntry) {
-    res.send({ data: logEntry });
-  });
-};
-
-
-/**
- * REST API endpoint
- * Update log entry by ID
- * Should be behind isAuthenticatedOwner middleware
- */
-exports.updateLogEntry = (req, res) => {
-  const id = req.params.id;
-  const requester = req.user.email;
-  const updatedEntry = req.body.data;
-
-  LogEntry.findById(id, function(err, logEntry) {
-    if (logEntry.user === requester) {
-      LogEntry.findByIdAndUpdate(id, updatedEntry, function(err, logEntry) {
-        res.send({ data: logEntry });
-      });
+    if (err) {
+      console.log(err);
+      res.statusMessage = err.toString();
+      res.status(500).end();
     } else {
-      res.status(401).send("401 Forbidden: You aren't the owner of this log entry");
+      console.log(logEntry);
+      res.send({ "data": logEntry });
     }
   });
 };
@@ -102,18 +91,55 @@ exports.updateLogEntry = (req, res) => {
  * Should be behind isAuthenticatedOwner middleware
  */
 exports.createLogEntry = (req, res) => {
-  const newEntry = req.body.logEntry;
+  const entry = new LogEntry(req.body.data);
   const requesterEmail = req.user.email;
-  const ownerEmail = newEntry.user;
+  const ownerEmail = entry.user;
 
   if (requesterEmail === ownerEmail) {
-    LogEntry.save(newEntry, function(err, logEntry) {
-      res.send({ data: logEntry });
+    entry.save(function(err) {
+      console.log('in create callback');
+      if (err) {
+        console.log(err);
+        res.statusMessage = err.toString();
+        res.status(500).end();
+      } else {
+        console.log('created:' + JSON.stringify(entry));
+        res.send({ "data": entry });
+      }
     });
   } else {
-    res.status(401).send("401 Forbidden: You aren't the owner of this log entry");
+    res.status(403).send("403 Forbidden: You aren't the owner of this log entry");
   }
 };
+
+
+/**
+ * REST API endpoint
+ * Update log entry by ID
+ * Should be behind isAuthenticatedOwner middleware
+ */
+exports.updateLogEntry = (req, res) => {
+  const id = req.params.id;
+  const entry = req.body.data;
+  const requesterEmail = req.user.email;
+  const ownerEmail = entry.user;
+
+  if (requesterEmail === ownerEmail) {
+    LogEntry.findByIdAndUpdate(id, entry, function(err, updatedEntry) {
+      if (err) {
+        console.log(err);
+        res.statusMessage = err.toString();
+        res.status(500).end();
+      } else {
+        res.send({ "data": updatedEntry });
+        console.log('updated:' + JSON.stringify(updatedEntry));
+      }
+    });
+  } else {
+    res.status(403).send("403 Forbidden: You aren't the owner of this log entry");
+  }
+};
+
 
 
 /**
@@ -126,12 +152,19 @@ exports.deleteLogEntry = (req, res) => {
   const requesterEmail = req.user.email;
 
   LogEntry.findById(id, function(err, logEntry) {
-    if (logEntry.user === requester) {
-      LogEntry.findById(id).remove(function(err) {
-        res.status(200).send("200 Success: Deleted log entry with id = " + id);
+    if (logEntry && logEntry.user === requester) {
+      logEntry.remove(function(err) {
+        if (err) {
+          console.log(err);
+          res.statusMessage = err.toString();
+          res.status(500).end();
+        } else {
+          res.send( { "data": { "deleted": {"_id": id} } } );
+          console.log('deleted:' + JSON.stringify({"_id": id}));
+        }
       });
     } else {
-      res.status(401).send("401 Forbidden: You aren't the owner of this log entry");
+      res.status(403).send("403 Forbidden: You aren't the owner of this log entry");
     }
   });
 };
@@ -141,16 +174,16 @@ exports.deleteLogEntry = (req, res) => {
  * Calculate points based on activity and duration
  */
 exports.calculateActivityPoints = (logEntry) => {
-  const activityDefinition = activityDefinitions[logEntry.activity];
+  const activityDefinition = lookups.activityDefinitions[logEntry.activity];
 
   // Is it the right time unit?
-  if (logEntry.duration.unit !== activityDefinition.duration.unit) {
-    res.status(500).send('500 error: Invalid activity.duration.unit: ' + logEntry.duration.unit +
-                         '. Expected: ' + activityDefinition.duration.unit);
+  if (logEntry.durationUnit !== activityDefinition.durationUnit) {
+    throw Error('500 error: Invalid activity.durationUnit: ' + logEntry.durationUnit + '. Expected: ' + activityDefinition.durationUnit);
   }
 
-  const completedTimeChunks = Math.floor(logEntry.duration.value / activityDefinition.duration.value);
+  const completedTimeChunks = Math.floor(logEntry.durationValue / activityDefinition.durationValue);
   const points = completedTimeChunks * activityDefinition.points;
+  console.log("points: " + points);
 
   return points;
 };

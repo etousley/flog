@@ -299,6 +299,6 @@ exports.activityDefinitions = {
     "category": "Healthy Behavior",
     "points": 5,
 		"durationValue": 1,
-		"durationUnit": "week" 
+		"durationUnit": "week"
   }
 }

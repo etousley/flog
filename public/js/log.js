@@ -1,14 +1,20 @@
 
+// TODO: having trouble assigning activity dataset, maybe stick in variable
+
+
 // Global variables used by multiple functions
 const CSRF_HEADER = 'X-CSRF-Token';
 
 let modal = $('#log-entry-modal');
-let modalDate = modal.find('.entry-date');
-let modalTitle = modal.find('.entry-title-input');
-let modalActivityButton = modal.find('#btn-activity');
-let modalDescription = modal.find('.entry-description-input');
-let modalDurationValue = modal.find('.entry-duration-value-input');
-let activeEntryData = {};
+let modalAlert = $('.modal-alert');
+let modalDateField = modal.find('.entry-date');
+let modalTitleField = modal.find('.entry-title-input');
+let modalActivityField = modal.find('#btn-activity');
+let modalDescriptionField = modal.find('.entry-description-input');
+let modalDurationValueField = modal.find('.entry-duration-value-input');
+let modalDurationUnitField = modal.find('.entry-duration-unit');
+let activeEntryElem = undefined;
+let userEmail = undefined;
 
 
 /**
@@ -28,37 +34,19 @@ setCSRFToken = (securityToken) => {
  * Get log data from REST API, then draw them to calendar
  */
 fillLogEntries = () => {
-  const dayElems = $('.fc-day');
-  const email = window.location.href.split('/')[-1];
+  const dayElems = $('.fc-day')
   const startDate = dayElems[0].dataset.date;
   const endDate = dayElems[dayElems.length - 1].dataset.date;
   const getLogEntriesUrl = '/api/log?' + jQuery.param({
-    "email": email,
+    "email": userEmail,
     "from": startDate,
     "to": endDate
   });
-  let entryElem = undefined;
-
 
   // Map data to calendar days
-  // Could probably do this more efficiently...
   $.get(getLogEntriesUrl, function(data) {
-    for (entry of data.data) {
-      for (dayElem of dayElems) {
-        if (entry.date.slice(0, 10) === dayElem.dataset.date) {
-          entryElem = document.createElement("button");
-          entryElem.className = "btn btn-sm btn-primary log-entry-btn";
-          entryElem.textContent = entry.title || (entry.activity + " (" + entry.durationValue + " " + entry.durationUnit + "s)");;
-
-          // Add data as data-foo attributes to the event element (there's probably a better way...)
-          for (let [key, value] of Object.entries(entry)) {
-            entryElem.dataset[key] = value;
-          }
-
-          dayElem.appendChild(entryElem);
-          break;
-        }
-      }
+    for (let entryData of data.data) {
+      addEntryElem(entryData);
     }
   });
 }
@@ -68,13 +56,18 @@ fillLogEntries = () => {
  * Render and display modal to reflect data (date, user, existing activities)
  */
 drawLogEntryModal = (clickedDayElem) => {
-  modalDate.html( activeEntryData.date.slice(0, 10) );
-  modalTitle.val(activeEntryData.title);
-  modalActivityButton.html(activeEntryData.activity);
-  modalActivityButton.val(activeEntryData.activity);
-  modalDescription.val(activeEntryData.description);
-  modalDurationValue.val(activeEntryData.durationValue);
+  const activityName = activeEntryElem.dataset.activity;
+  const targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
 
+  modalDateField.html( activeEntryElem.dataset.date.slice(0, 10) );
+  modalTitleField.val(activeEntryElem.dataset.title);
+  modalActivityField.val(targetActivity);
+  modalActivityField.val(activeEntryElem.dataset.activity);
+  modalDescriptionField.val(activeEntryElem.dataset.description);
+  modalDurationValueField.val(activeEntryElem.dataset.durationValue);
+  modalDurationUnitField.val(targetActivity.dataset.durationUnit) + 's';
+
+  updateElemDataset(modalActivityField, targetActivity.dataset);
   modal.modal('show');
 };
 
@@ -83,23 +76,27 @@ drawLogEntryModal = (clickedDayElem) => {
  * Create or update log entry
  */
  saveLogEntry = () => {
-   const newEntryData = {
-     "date": activeEntryData.date,
-     "title": modalTitle.val(),
-     "activity": modalActivityButton.html(),
-     "description": modalDescription.val(),
-     "durationValue": modalDurationValue.val()
-   };
-   updateActiveEntryData(newEntryData);
 
-   if (activeEntryData._id) {
+   updateElemDataset(activeEntryElem, {
+     "title": modalTitleField.val(),
+     "user": userEmail,
+     "activity": modalActivityField.html(),
+     "description": modalDescriptionField.val(),
+     "durationValue": modalDurationValueField.val(),
+     "durationUnit": modalActivityField.dataset.durationUnit,
+     "category": modalActivityField.dataset.category
+   });
+
+   if (activeEntryElem.dataset._id !== undefined) {
      // If there's already an _id, do a PUT (update)
      $.ajax({
-       url: '/api/log/' + activeEntryData._id,
+       url: '/api/log/' + activeEntryElem.dataset._id,
        type: 'PUT',
-       data: {"data": activeEntryData},
+       data: {"data": activeEntryElem.dataset},
        success: function(data) {
-         console.log('Updated entry: ' + JSON.stringify(activeEntryData));
+         updateElemDataset(activeEntryElem, data);
+         modalAlert.text('Updated entry').alert();
+         console.log('Updated entry: ' + JSON.stringify(data));
        }
      });
    } else {
@@ -107,9 +104,11 @@ drawLogEntryModal = (clickedDayElem) => {
      $.ajax({
        url: '/api/log/',
        type: 'POST',
-       data: {"data": activeEntryData},
+       data: {"data": activeEntryElem.dataset},
        success: function(data) {
-         console.log('Created entry: ' + JSON.stringify(activeEntryData));
+         addEntryElem(data);
+         modalAlert.text('Added new entry').alert();
+         console.log('Created entry: ' + JSON.stringify(data));
        }
      });
    }
@@ -117,24 +116,59 @@ drawLogEntryModal = (clickedDayElem) => {
 
 
  /**
-  * Update activeEntryData to reflect current state of log entry modal
+  * Delete log entry
   */
-updateActiveEntryData = (newEntryData) => {
-  if (newEntryData === undefined || Object.keys(newEntryData).length === 0) {
-    console.log("Missing newEntryData: " + newEntryData);
-    return;
-  }
-  for ( let [key, val] of Object.entries(newEntryData) ) {
-    activeEntryData[key] = val;
-  };
+ deleteLogEntry = () => {
+   $.ajax({
+     url: '/api/log/' + activeEntryElem.dataset._id,
+     type: 'DELETE',
+     success: function(data) {
+       activeEntryElem.remove();
+       activeEntryElem.dataset = {};
+       modalAlert.text('Deleted entry');
+       modalAlert.alert();
+       console.log('Deleted entry');
+     }
+   });
+ }
+
+
+/**
+ * Add new entry element to calendar day. Entry element should have data- attrs
+ */
+addEntryElem = (entryData) => {
+  const entryDate = entryData.date.slice(0, 10);
+  const dayElem = document.querySelectorAll(`.fc-day[data-date='${entryDate}']`)[0];
+  activeEntryElem = document.createElement("button");
+
+  activeEntryElem.className = "btn btn-sm btn-primary log-entry-btn";
+  activeEntryElem.textContent = entryData.title || (entryData.activity + " (" + entryData.durationValue + " " + entryData.durationUnit + "s)");;
+  updateElemDataset(activeEntryElem, entryData);
+
+  dayElem.appendChild(activeEntryElem);
 };
 
 
 /**
- * Do stuff when page loads
+ * Update element dataset
+ */
+ updateElemDataset = (elem, data) => {
+   if (elem.dataset === undefined) {
+     elem.dataset = {};
+   }
+   for ( let [key, val] of Object.entries(data) ) {
+     elem.dataset[key] = val;
+   }
+ }
+
+
+/**
+ * When page loads, do stuff and create event listeners
  */
 $(document).ready(function() {
   setCSRFToken($('meta[name="csrf-token"]').attr('content'));
+
+  userEmail = window.location.href.replace("#", "").split('/').slice(-1);
 
   // Hide modal
   $('#log-entry-modal').modal('hide');
@@ -149,9 +183,9 @@ $(document).ready(function() {
   fillLogEntries();
 
   // Show log entry when date is clicked
-  $('.fc-day, .fc-day-top, .log-entry-btn').on('click touch', function () {
+  $('.fc-day, .fc-day-top, .log-entry-btn').on('click touch', function (event) {
     event.stopPropagation();  // Need this to click on an entry button inside a clickable day cell
-    updateActiveEntryData(event.target.dataset);
+    activeEntryElem = event.target;
     drawLogEntryModal(event.target);
   });
 
@@ -160,9 +194,24 @@ $(document).ready(function() {
     saveLogEntry();
   });
 
+  // Delete log entry when Delete button is clicked
+  $('.delete-entry').on('click touch', function() {
+    const confirmed = confirm("Delete this entry forever?");
+    if (confirmed === true) {
+      deleteLogEntry();
+    }
+  })
+
   // Update selected value (and html) when a dropdown option is clicked
   $('#activity-dropdown li > a').on('click touch', function() {
-    $('#btn-activity').html(this.innerHTML);
-    $('#btn-activity').val(this.innerHTML);
+    modalActivityField.html(this.innerHTML);
+    modalActivityField.val(this.innerHTML);
+    updateElemDataset(modalActivityField, this.dataset);
+    modalDurationUnitField.html(this.dataset.durationUnit + "s");
   });
+
+  // Clear old modal alerts when modal is re-opened
+  modal.on('show.bs.modal', function(event) {
+    $('.modal-alert').alert('close');
+  })
 });
