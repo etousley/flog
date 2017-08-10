@@ -76,6 +76,10 @@ textarea {
 
 // FullCalendar style overrides
 // -------------------------
+.fc td .fc-day {
+  padding-top: 2em;
+}
+
 .fc-day {
   cursor: pointer;
 }
@@ -94,10 +98,14 @@ textarea {
 
 .fc .log-entry-btn {
   display: block;
-  margin-top: 2em;
+  margin-top: 2px;
   margin-right: auto;
-  margin-bottom: 1em;
+  margin-bottom: 2px;
   margin-left: auto;
+  min-width: 95%;
+  padding: 0;
+  font-size: 0.9em;
+  line-height: 0.9em;
 }
 
 // Log entry modal styles

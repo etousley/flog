@@ -11,9 +11,7 @@ const logEntrySchema = new mongoose.Schema({
   durationValue: { type: Number, required: true },
   points: Number,
   title: String,
-  description: String,
-  updated: { type: Date, default: Date.now }
-
+  description: String
 }, { timestamps: true });
 
 /*
@@ -21,9 +19,8 @@ const logEntrySchema = new mongoose.Schema({
  * Automatically calculate activity points based on activity type and duration
  */
 logEntrySchema.pre('save', function(next) {
-  // durationUnit should always be singular, but I forget sometimes.
   if (this.durationUnit && this.durationUnit.endsWith('s')) {
-    this.durationUnit = this.durationUnit.slice(0, -1);
+    this.durationUnit = this.durationUnit.slice(0, -1);  // durationUnit should be singular
   }
   this.points = logEntry.calculateActivityPoints(this);
 })
@@ -33,9 +30,8 @@ logEntrySchema.pre('save', function(next) {
  * Automatically calculate activity points based on activity type and duration
  */
 logEntrySchema.pre('update', function(next) {
-  // durationUnit should always be singular, but I forget sometimes.
   if (this.durationUnit && this.durationUnit.endsWith('s')) {
-    this.durationUnit = this.durationUnit.slice(0, -1);
+    this.durationUnit = this.durationUnit.slice(0, -1);  // durationUnit should be singular
   }
   this.points = logEntry.calculateActivityPoints(this);
 })

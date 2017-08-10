@@ -22,7 +22,10 @@ block content
           //- Editable modal for log owner
           if user.email === logOwner.email
             .modal-body
-              .alert.modal-alert.info(role="alert")
+              .alert-container
+                .alert.alert-info.alert-dismissable.modal-alert(role="alert")
+                  button.close(type="button" data-dismiss="alert" aria-label="Close")
+                    span(aria-hidden="true") ×
               .input-group.vert-spaced-sm
                 span.input-group-addon.entry-date {{ date }}
                 input.form-control.entry-title-input(type="text" placeholder="Title of log entry (optional)")
@@ -43,7 +46,7 @@ block content
                 textarea.form-control.entry-description-input(placeholder="Description (optional)")
             .modal-footer
               button.btn.btn-primary.save-entry(type="button") Save
-              button.btn.btn-warning.delete-entry(type="button") Delete
+              button.btn.btn-warning.delete-entry(type="button", disabled="true") Delete
               button.btn.btn-secondary(type="button", data-dismiss="modal") Close
               
           //- Read-only modal for non-owners

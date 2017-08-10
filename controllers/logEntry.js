@@ -96,15 +96,19 @@ exports.createLogEntry = (req, res) => {
   const ownerEmail = entry.user;
 
   if (requesterEmail === ownerEmail) {
-    entry.save(function(err) {
+    console.log('about to call LogEntry.create()...');
+    // Note: Mongoose bug: Model.create() and instance.save() never execute callback
+    // Workaround: Use $__save()
+    // https://github.com/Automattic/mongoose/issues/4064
+    entry.$__save({}, function(err, createdEntry) {
       console.log('in create callback');
       if (err) {
         console.log(err);
         res.statusMessage = err.toString();
         res.status(500).end();
       } else {
-        console.log('created:' + JSON.stringify(entry));
-        res.send({ "data": entry });
+        console.log('created:' + JSON.stringify(createdEntry));
+        res.send({ "data": createdEntry });
       }
     });
   } else {
@@ -120,12 +124,13 @@ exports.createLogEntry = (req, res) => {
  */
 exports.updateLogEntry = (req, res) => {
   const id = req.params.id;
-  const entry = req.body.data;
+  const entryData = req.body.data;
   const requesterEmail = req.user.email;
-  const ownerEmail = entry.user;
+  const ownerEmail = entryData.user;
 
   if (requesterEmail === ownerEmail) {
-    LogEntry.findByIdAndUpdate(id, entry, function(err, updatedEntry) {
+    // Mongoose returns original object instead of updated object by default (?????)
+    LogEntry.findByIdAndUpdate(id, entryData, {new: true}, function(err, updatedEntry) {
       if (err) {
         console.log(err);
         res.statusMessage = err.toString();
@@ -152,7 +157,7 @@ exports.deleteLogEntry = (req, res) => {
   const requesterEmail = req.user.email;
 
   LogEntry.findById(id, function(err, logEntry) {
-    if (logEntry && logEntry.user === requester) {
+    if (logEntry && logEntry.user === requesterEmail) {
       logEntry.remove(function(err) {
         if (err) {
           console.log(err);
@@ -183,7 +188,7 @@ exports.calculateActivityPoints = (logEntry) => {
 
   const completedTimeChunks = Math.floor(logEntry.durationValue / activityDefinition.durationValue);
   const points = completedTimeChunks * activityDefinition.points;
-  console.log("points: " + points);
+  console.log("calculated points: " + points);
 
   return points;
 };

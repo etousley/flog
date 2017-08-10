@@ -1,6 +1,4 @@
 
-// TODO: having trouble assigning activity dataset, maybe stick in variable
-
 
 // Global variables used by multiple functions
 const CSRF_HEADER = 'X-CSRF-Token';
@@ -13,6 +11,8 @@ let modalActivityField = modal.find('#btn-activity');
 let modalDescriptionField = modal.find('.entry-description-input');
 let modalDurationValueField = modal.find('.entry-duration-value-input');
 let modalDurationUnitField = modal.find('.entry-duration-unit');
+let modalSaveButton = modal.find('.save-entry');
+let modalDeleteButton = modal.find('.delete-entry');
 let activeEntryElem = undefined;
 let userEmail = undefined;
 
@@ -34,6 +34,11 @@ setCSRFToken = (securityToken) => {
  * Get log data from REST API, then draw them to calendar
  */
 fillLogEntries = () => {
+  // Draw calendar
+  $('#calendar').fullCalendar({
+    // put options and callbacks here
+  });
+
   const dayElems = $('.fc-day')
   const startDate = dayElems[0].dataset.date;
   const endDate = dayElems[dayElems.length - 1].dataset.date;
@@ -42,14 +47,12 @@ fillLogEntries = () => {
     "from": startDate,
     "to": endDate
   });
-
-  // Map data to calendar days
   $.get(getLogEntriesUrl, function(data) {
     for (let entryData of data.data) {
       addEntryElem(entryData);
     }
   });
-}
+};
 
 
 /**
@@ -57,17 +60,25 @@ fillLogEntries = () => {
  */
 drawLogEntryModal = (clickedDayElem) => {
   const activityName = activeEntryElem.dataset.activity;
-  const targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
+  let targetActivity = undefined;
 
   modalDateField.html( activeEntryElem.dataset.date.slice(0, 10) );
   modalTitleField.val(activeEntryElem.dataset.title);
-  modalActivityField.val(targetActivity);
-  modalActivityField.val(activeEntryElem.dataset.activity);
   modalDescriptionField.val(activeEntryElem.dataset.description);
   modalDurationValueField.val(activeEntryElem.dataset.durationValue);
-  modalDurationUnitField.val(targetActivity.dataset.durationUnit) + 's';
 
-  updateElemDataset(modalActivityField, targetActivity.dataset);
+  if (activityName !== undefined && activityName !== 'Activity') {
+    targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
+    modalDurationUnitField.val(targetActivity.dataset.durationUnit) + 's';
+    updateElemDataset(modalActivityField, targetActivity.dataset);
+    modalActivityField.val(targetActivity);
+    modalActivityField.text(activityName);
+  }
+
+  if (activeEntryElem && activeEntryElem.dataset._id !== undefined) {
+    modalDeleteButton.prop("disabled", false);
+  }
+
   modal.modal('show');
 };
 
@@ -94,9 +105,11 @@ drawLogEntryModal = (clickedDayElem) => {
        type: 'PUT',
        data: {"data": activeEntryElem.dataset},
        success: function(data) {
-         updateElemDataset(activeEntryElem, data);
-         modalAlert.text('Updated entry').alert();
-         console.log('Updated entry: ' + JSON.stringify(data));
+         let updatedEntry = data.data;
+         activeEntryElem.textContent = updatedEntry.title;
+         modalAlert.text('Updated entry');
+         modalAlert.show();
+         console.log('Updated entry: ' + JSON.stringify(updatedEntry));
        }
      });
    } else {
@@ -106,9 +119,12 @@ drawLogEntryModal = (clickedDayElem) => {
        type: 'POST',
        data: {"data": activeEntryElem.dataset},
        success: function(data) {
-         addEntryElem(data);
-         modalAlert.text('Added new entry').alert();
-         console.log('Created entry: ' + JSON.stringify(data));
+         let createdEntry = data.data;
+         addEntryElem(createdEntry);
+         modalDeleteButton.prop("disabled", false);
+         modalAlert.text('Added new entry');
+         modalAlert.show();
+         console.log('Created entry: ' + JSON.stringify(createdEntry));
        }
      });
    }
@@ -125,8 +141,9 @@ drawLogEntryModal = (clickedDayElem) => {
      success: function(data) {
        activeEntryElem.remove();
        activeEntryElem.dataset = {};
+       modalDeleteButton.prop("disabled", true);
        modalAlert.text('Deleted entry');
-       modalAlert.alert();
+       modalAlert.show();
        console.log('Deleted entry');
      }
    });
@@ -152,14 +169,25 @@ addEntryElem = (entryData) => {
 /**
  * Update element dataset
  */
- updateElemDataset = (elem, data) => {
+updateElemDataset = (elem, data) => {
    if (elem.dataset === undefined) {
      elem.dataset = {};
    }
    for ( let [key, val] of Object.entries(data) ) {
      elem.dataset[key] = val;
    }
- }
+};
+
+
+ /**
+  * Select activity from dropdown and update dataset
+  */
+selectActivity = (activityElem) => {
+  modalActivityField.html(activityElem.innerHTML);
+  modalActivityField.val(activityElem.innerHTML);
+  updateElemDataset(modalActivityField, activityElem.dataset);
+  modalDurationUnitField.html(activityElem.dataset.durationUnit + "s");
+};
 
 
 /**
@@ -170,32 +198,36 @@ $(document).ready(function() {
 
   userEmail = window.location.href.replace("#", "").split('/').slice(-1);
 
-  // Hide modal
   $('#log-entry-modal').modal('hide');
 
-  // Draw calendar
-  $('#calendar').fullCalendar({
-    // put options and callbacks here
+  // Clear old modal alerts when modal is re-opened
+  modal.on('show.bs.modal', function(event) {
+    modalAlert.hide();
+  })
+
+  fillLogEntries();
+  // Redraw calendar when prev/next buttons are clicked
+  $(document.body).on('click touch', '.fc-prev-button, .fc-next-button', function (event) {
+    console.log('changed month');
+    fillLogEntries();
+    // addListeners();
   });
 
-  // Retrieve and insert log entries for visible date range
-  // TODO: this should also get called when month arrows are clicked
-  fillLogEntries();
-
   // Show log entry when date is clicked
-  $('.fc-day, .fc-day-top, .log-entry-btn').on('click touch', function (event) {
+  $(document.body).on('click touch', '.fc-day, .fc-day-top, .log-entry-btn', function (event) {
+    console.log('clicked day');
     event.stopPropagation();  // Need this to click on an entry button inside a clickable day cell
     activeEntryElem = event.target;
     drawLogEntryModal(event.target);
   });
 
   // Save log entry when Save button is clicked
-  $('.save-entry').on('click touch', function() {
+  $(document.body).on('click touch', '.save-entry', function() {
     saveLogEntry();
   });
 
   // Delete log entry when Delete button is clicked
-  $('.delete-entry').on('click touch', function() {
+  $(document.body).on('click touch', '.delete-entry', function() {
     const confirmed = confirm("Delete this entry forever?");
     if (confirmed === true) {
       deleteLogEntry();
@@ -203,15 +235,8 @@ $(document).ready(function() {
   })
 
   // Update selected value (and html) when a dropdown option is clicked
-  $('#activity-dropdown li > a').on('click touch', function() {
-    modalActivityField.html(this.innerHTML);
-    modalActivityField.val(this.innerHTML);
-    updateElemDataset(modalActivityField, this.dataset);
-    modalDurationUnitField.html(this.dataset.durationUnit + "s");
+  $(document.body).on('click touch', '#activity-dropdown li > a', function() {
+    selectActivity(this);
   });
 
-  // Clear old modal alerts when modal is re-opened
-  modal.on('show.bs.modal', function(event) {
-    $('.modal-alert').alert('close');
-  })
 });
