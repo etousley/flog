@@ -8,6 +8,8 @@ block content
   //-     p= key + ": " + JSON.stringify(val)
   hr
     
+  #calendar
+    
   //- Required modal container
   .modal-container
     .modal.fade#log-entry-modal
@@ -28,7 +30,7 @@ block content
                     span(aria-hidden="true") ×
               .input-group.vert-spaced-sm
                 span.input-group-addon.entry-date {{ date }}
-                input.form-control.entry-title-input(type="text" placeholder="Title of log entry (optional)")
+                input.form-control.entry-title-field(type="text" placeholder="Title of log entry (optional)")
               //- Required dropdown container
               .dropdown 
                 .btn-group
@@ -38,12 +40,15 @@ block content
                   ul.dropdown-menu#activity-dropdown
                     each attrs, name in activities
                       li
-                        a.dropdown-item(href="#" data-duration-unit=attrs.durationUnit data-points=attrs.points data-category=attrs.category)= name
+                        a.dropdown-item(href="#" data-duration-value=attrs.durationValue data-duration-unit=attrs.durationUnit data-points=attrs.points data-category=attrs.category)= name
               .input-group.vert-spaced-sm
                 input.form-control.entry-duration-value-input(type="text" placeholder="Minutes (e.g. 20)")
                 span.input-group-addon.entry-duration-unit minutes
               span.vert-spaced-sm
-                textarea.form-control.entry-description-input(placeholder="Description (optional)")
+                textarea.form-control.entry-description-field(placeholder="Description (optional)")
+              .alert-container
+                .alert.alert-success.entry-points-field(role="alert")
+                  
             .modal-footer
               button.btn.btn-primary.save-entry(type="button") Save
               button.btn.btn-warning.delete-entry(type="button", disabled="true") Delete

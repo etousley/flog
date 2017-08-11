@@ -78,6 +78,8 @@ textarea {
 // -------------------------
 .fc td .fc-day {
   padding-top: 2em;
+  resize: both;
+  overflow: auto;
 }
 
 .fc-day {
@@ -85,7 +87,7 @@ textarea {
 }
 
 .fc-day:hover {
-  background-color: #e6fff7;
+  background-color: #d9edf7;
 }
 
 .fc-day-top {
@@ -98,14 +100,18 @@ textarea {
 
 .fc .log-entry-btn {
   display: block;
+  width: 90%;
   margin-top: 2px;
   margin-right: auto;
   margin-bottom: 2px;
   margin-left: auto;
-  min-width: 95%;
-  padding: 0;
+  padding-top: 1px;
+  padding-right: 4px;
+  padding-bottom: 1px;
+  padding-left: 4px;
   font-size: 0.9em;
-  line-height: 0.9em;
+  border-radius: 0.9em;
+  white-space: pre-wrap;
 }
 
 // Log entry modal styles

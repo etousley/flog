@@ -6,15 +6,20 @@ const CSRF_HEADER = 'X-CSRF-Token';
 let modal = $('#log-entry-modal');
 let modalAlert = $('.modal-alert');
 let modalDateField = modal.find('.entry-date');
-let modalTitleField = modal.find('.entry-title-input');
+let modalTitleField = modal.find('.entry-title-field');
 let modalActivityField = modal.find('#btn-activity');
-let modalDescriptionField = modal.find('.entry-description-input');
-let modalDurationValueField = modal.find('.entry-duration-value-input');
+let modalDescriptionField = modal.find('.entry-description-field');
+let modalDurationValueField = modal.find('.entry-duration-value-field');
 let modalDurationUnitField = modal.find('.entry-duration-unit');
+let modalPointsField = modal.find('.entry-points-field');
 let modalSaveButton = modal.find('.save-entry');
 let modalDeleteButton = modal.find('.delete-entry');
 let activeEntryElem = undefined;
 let userEmail = undefined;
+
+const calendarOptions = {
+  contentHeight: 'auto'
+}
 
 
 /**
@@ -36,7 +41,7 @@ setCSRFToken = (securityToken) => {
 fillLogEntries = () => {
   // Draw calendar
   $('#calendar').fullCalendar({
-    // put options and callbacks here
+    calendarOptions
   });
 
   const dayElems = $('.fc-day')
@@ -59,6 +64,9 @@ fillLogEntries = () => {
  * Render and display modal to reflect data (date, user, existing activities)
  */
 drawLogEntryModal = (clickedDayElem) => {
+  console.log('in drawLogEntryModal, activeEntryElem: ');
+  console.log( activeEntryElem);
+
   const activityName = activeEntryElem.dataset.activity;
   let targetActivity = undefined;
 
@@ -66,6 +74,8 @@ drawLogEntryModal = (clickedDayElem) => {
   modalTitleField.val(activeEntryElem.dataset.title);
   modalDescriptionField.val(activeEntryElem.dataset.description);
   modalDurationValueField.val(activeEntryElem.dataset.durationValue);
+
+  updateModalPoints(activeEntryElem.dataset);
 
   if (activityName !== undefined && activityName !== 'Activity') {
     targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
@@ -97,6 +107,7 @@ drawLogEntryModal = (clickedDayElem) => {
      "durationUnit": modalActivityField.dataset.durationUnit,
      "category": modalActivityField.dataset.category
    });
+   updateEntryTitle(activeEntryElem.dataset);
 
    if (activeEntryElem.dataset._id !== undefined) {
      // If there's already an _id, do a PUT (update)
@@ -106,7 +117,7 @@ drawLogEntryModal = (clickedDayElem) => {
        data: {"data": activeEntryElem.dataset},
        success: function(data) {
          let updatedEntry = data.data;
-         activeEntryElem.textContent = updatedEntry.title;
+         updateModalPoints(updatedEntry);
          modalAlert.text('Updated entry');
          modalAlert.show();
          console.log('Updated entry: ' + JSON.stringify(updatedEntry));
@@ -120,6 +131,7 @@ drawLogEntryModal = (clickedDayElem) => {
        data: {"data": activeEntryElem.dataset},
        success: function(data) {
          let createdEntry = data.data;
+         updateModalPoints(createdEntry);
          addEntryElem(createdEntry);
          modalDeleteButton.prop("disabled", false);
          modalAlert.text('Added new entry');
@@ -156,13 +168,54 @@ drawLogEntryModal = (clickedDayElem) => {
 addEntryElem = (entryData) => {
   const entryDate = entryData.date.slice(0, 10);
   const dayElem = document.querySelectorAll(`.fc-day[data-date='${entryDate}']`)[0];
-  activeEntryElem = document.createElement("button");
+  activeEntryElem = document.createElement("div");
 
   activeEntryElem.className = "btn btn-sm btn-primary log-entry-btn";
-  activeEntryElem.textContent = entryData.title || (entryData.activity + " (" + entryData.durationValue + " " + entryData.durationUnit + "s)");;
+  modalPointsField.val(entryData.points);
+
+  updateEntryTitle(entryData);
   updateElemDataset(activeEntryElem, entryData);
 
   dayElem.appendChild(activeEntryElem);
+
+  // Make sure week row is big enough to hold all the entries :P
+  const thisRow = dayElem.parentElement.parentElement.parentElement.parentElement.parentElement;
+  const thisRowHeightPx = parseInt(thisRow.style.height.replace('px', ''));
+  const dayEntries = dayElem.querySelectorAll('.log-entry-btn');
+  let totalHeight = 0;
+  for (let elem of dayEntries) {
+    totalHeight += elem.clientHeight;
+  }
+  if (thisRowHeightPx < (totalHeight + 60)) {
+    thisRow.style.height = (totalHeight + 60) + 'px';
+  }
+};
+
+
+/**
+ * Use entry title if available; otherwise, use reasonable default
+ */
+updateEntryTitle = (entryData) => {
+  if (entryData.title && entryData.title.length > 0) {
+    console.log('in updateEntryTitle, activeEntryElem: ');
+    console.log( activeEntryElem);
+    activeEntryElem.textContent = entryData.title;
+  } else {
+    activeEntryElem.textContent = entryData.activity.slice(0, 24) + " (" + entryData.points + " pts)";
+  }
+};
+
+
+/**
+ * Update points; If points > 0, also highlight the container
+ */
+updateModalPoints = (entryData) => {
+  if (entryData.points > 0) {
+    modalPointsField.text("Earned " + entryData.points + " points!");
+    modalPointsField.show();
+  } else {
+    modalPointsField.hide();
+  }
 };
 
 
@@ -183,10 +236,25 @@ updateElemDataset = (elem, data) => {
   * Select activity from dropdown and update dataset
   */
 selectActivity = (activityElem) => {
+  modalDurationValueField.prop('disabled', true);
   modalActivityField.html(activityElem.innerHTML);
   modalActivityField.val(activityElem.innerHTML);
   updateElemDataset(modalActivityField, activityElem.dataset);
-  modalDurationUnitField.html(activityElem.dataset.durationUnit + "s");
+
+  if (activityElem.dataset.durationUnit.includes('minute')) {
+    // If it's a minutes-based activity, user should enter duration
+    modalDurationValueField.prop('disabled', false);
+  } else {
+    // Otherwise, populate the default value and leave it disabled
+    modalDurationValueField.val(activityElem.dataset.durationValue);
+  }
+
+  // Pluralize units if necessary
+  if (activityElem.dataset.durationValue > 1) {
+    modalDurationUnitField.html(activityElem.dataset.durationUnit + "s");
+  } else {
+    modalDurationUnitField.html(activityElem.dataset.durationUnit);
+  }
 };
 
 
@@ -208,16 +276,16 @@ $(document).ready(function() {
   fillLogEntries();
   // Redraw calendar when prev/next buttons are clicked
   $(document.body).on('click touch', '.fc-prev-button, .fc-next-button', function (event) {
-    console.log('changed month');
     fillLogEntries();
     // addListeners();
   });
 
   // Show log entry when date is clicked
   $(document.body).on('click touch', '.fc-day, .fc-day-top, .log-entry-btn', function (event) {
-    console.log('clicked day');
     event.stopPropagation();  // Need this to click on an entry button inside a clickable day cell
-    activeEntryElem = event.target;
+    if event.target.hasClass('.log-entry-btn') {
+      activeEntryElem = event.target;
+    }
     drawLogEntryModal(event.target);
   });
 

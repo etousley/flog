@@ -14,6 +14,26 @@ exports.getActivityDefinitions = (req, res) => {
 
 
 /**
+ * Calculate points based on activity and duration
+ */
+calculateActivityPoints = (logEntry) => {
+  const activityDefinition = lookups.activityDefinitions[logEntry.activity];
+
+  // Is it the right time unit?
+  if (logEntry.durationUnit !== activityDefinition.durationUnit) {
+    throw Error('500 error: Invalid activity.durationUnit: ' + logEntry.durationUnit + '. Expected: ' + activityDefinition.durationUnit);
+  }
+
+  console.log(logEntry.durationValue, activityDefinition.durationValue);
+  const completedTimeChunks = Math.floor(logEntry.durationValue / activityDefinition.durationValue);
+  const points = completedTimeChunks * activityDefinition.points;
+  console.log("calculated points: " + points);
+
+  return points;
+};
+
+
+/**
  * GET /log
  * Render logEntry log template
  */
@@ -53,8 +73,6 @@ exports.getLogEntries = (req, res) => {
     }
   }
 
-  // console.log('filter: ' + JSON.stringify(filter));
-
   LogEntry.find(filter, function(err, logEntries) {
     if (err) {
       res.status(500).send({"error": err})
@@ -91,17 +109,22 @@ exports.getLogEntry = (req, res) => {
  * Should be behind isAuthenticatedOwner middleware
  */
 exports.createLogEntry = (req, res) => {
-  const entry = new LogEntry(req.body.data);
+  let entry = new LogEntry(req.body.data);
   const requesterEmail = req.user.email;
   const ownerEmail = entry.user;
 
   if (requesterEmail === ownerEmail) {
-    console.log('about to call LogEntry.create()...');
+    // durationUnit should be singular
+    if (entry.durationUnit && entry.durationUnit.endsWith('s')) {
+     entry.durationUnit = entry.durationUnit.slice(0, -1);
+    }
+
+    entry.points = calculateActivityPoints(entry);
+
     // Note: Mongoose bug: Model.create() and instance.save() never execute callback
     // Workaround: Use $__save()
     // https://github.com/Automattic/mongoose/issues/4064
     entry.$__save({}, function(err, createdEntry) {
-      console.log('in create callback');
       if (err) {
         console.log(err);
         res.statusMessage = err.toString();
@@ -123,10 +146,17 @@ exports.createLogEntry = (req, res) => {
  * Should be behind isAuthenticatedOwner middleware
  */
 exports.updateLogEntry = (req, res) => {
+  let entryData = req.body.data;
   const id = req.params.id;
-  const entryData = req.body.data;
   const requesterEmail = req.user.email;
   const ownerEmail = entryData.user;
+
+   // durationUnit should be singular
+  if (entryData.durationUnit && entryData.durationUnit.endsWith('s')) {
+    entryData.durationUnit = entryData.durationUnit.slice(0, -1);
+  }
+
+  entryData.points = calculateActivityPoints(entryData);
 
   if (requesterEmail === ownerEmail) {
     // Mongoose returns original object instead of updated object by default (?????)
@@ -144,7 +174,6 @@ exports.updateLogEntry = (req, res) => {
     res.status(403).send("403 Forbidden: You aren't the owner of this log entry");
   }
 };
-
 
 
 /**
@@ -172,23 +201,4 @@ exports.deleteLogEntry = (req, res) => {
       res.status(403).send("403 Forbidden: You aren't the owner of this log entry");
     }
   });
-};
-
-
-/**
- * Calculate points based on activity and duration
- */
-exports.calculateActivityPoints = (logEntry) => {
-  const activityDefinition = lookups.activityDefinitions[logEntry.activity];
-
-  // Is it the right time unit?
-  if (logEntry.durationUnit !== activityDefinition.durationUnit) {
-    throw Error('500 error: Invalid activity.durationUnit: ' + logEntry.durationUnit + '. Expected: ' + activityDefinition.durationUnit);
-  }
-
-  const completedTimeChunks = Math.floor(logEntry.durationValue / activityDefinition.durationValue);
-  const points = completedTimeChunks * activityDefinition.points;
-  console.log("calculated points: " + points);
-
-  return points;
 };

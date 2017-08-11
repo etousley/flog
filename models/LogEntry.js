@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const logEntry = require('../controllers/logEntry');
 
 
 const logEntrySchema = new mongoose.Schema({
@@ -10,31 +9,10 @@ const logEntrySchema = new mongoose.Schema({
   durationUnit: { type: String, required: true },
   durationValue: { type: Number, required: true },
   points: Number,
-  title: String,
+  title: {type: String},
   description: String
 }, { timestamps: true });
 
-/*
- * Pre-save method of logEntrySchema
- * Automatically calculate activity points based on activity type and duration
- */
-logEntrySchema.pre('save', function(next) {
-  if (this.durationUnit && this.durationUnit.endsWith('s')) {
-    this.durationUnit = this.durationUnit.slice(0, -1);  // durationUnit should be singular
-  }
-  this.points = logEntry.calculateActivityPoints(this);
-})
-
-/*
- * Pre-update method of logEntrySchema
- * Automatically calculate activity points based on activity type and duration
- */
-logEntrySchema.pre('update', function(next) {
-  if (this.durationUnit && this.durationUnit.endsWith('s')) {
-    this.durationUnit = this.durationUnit.slice(0, -1);  // durationUnit should be singular
-  }
-  this.points = logEntry.calculateActivityPoints(this);
-})
 
 // Model is named 'LogEntry', but collection name is 'logEntries'
 const LogEntry = mongoose.model('LogEntry', logEntrySchema, 'logEntries');
