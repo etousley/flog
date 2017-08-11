@@ -64,8 +64,8 @@ fillLogEntries = () => {
  * Render and display modal to reflect data (date, user, existing activities)
  */
 drawLogEntryModal = (clickedDayElem) => {
-  console.log('in drawLogEntryModal, activeEntryElem: ');
-  console.log( activeEntryElem);
+  // console.log('in drawLogEntryModal, activeEntryElem: ');
+  // console.log( activeEntryElem);
 
   const activityName = activeEntryElem.dataset.activity;
   let targetActivity = undefined;
@@ -197,8 +197,8 @@ addEntryElem = (entryData) => {
  */
 updateEntryTitle = (entryData) => {
   if (entryData.title && entryData.title.length > 0) {
-    console.log('in updateEntryTitle, activeEntryElem: ');
-    console.log( activeEntryElem);
+    // console.log('in updateEntryTitle, activeEntryElem: ');
+    // console.log( activeEntryElem);
     activeEntryElem.textContent = entryData.title;
   } else {
     activeEntryElem.textContent = entryData.activity.slice(0, 24) + " (" + entryData.points + " pts)";
@@ -283,9 +283,10 @@ $(document).ready(function() {
   // Show log entry when date is clicked
   $(document.body).on('click touch', '.fc-day, .fc-day-top, .log-entry-btn', function (event) {
     event.stopPropagation();  // Need this to click on an entry button inside a clickable day cell
-    if event.target.hasClass('.log-entry-btn') {
+    // if (event.target.className.includes('log-entry-btn')) {
       activeEntryElem = event.target;
-    }
+    // }
+    // TODO: need better solution here
     drawLogEntryModal(event.target);
   });
 

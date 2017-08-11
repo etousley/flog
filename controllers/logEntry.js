@@ -18,13 +18,13 @@ exports.getActivityDefinitions = (req, res) => {
  */
 calculateActivityPoints = (logEntry) => {
   const activityDefinition = lookups.activityDefinitions[logEntry.activity];
+  console.log(JSON.stringify(logEntry));
 
   // Is it the right time unit?
   if (logEntry.durationUnit !== activityDefinition.durationUnit) {
     throw Error('500 error: Invalid activity.durationUnit: ' + logEntry.durationUnit + '. Expected: ' + activityDefinition.durationUnit);
   }
 
-  console.log(logEntry.durationValue, activityDefinition.durationValue);
   const completedTimeChunks = Math.floor(logEntry.durationValue / activityDefinition.durationValue);
   const points = completedTimeChunks * activityDefinition.points;
   console.log("calculated points: " + points);
