@@ -1,4 +1,7 @@
+
 const mongoose = require('mongoose');
+const lookups = require('../public/js/lookups');
+const activityNames = Object.keys(lookups.activityDefinitions);
 
 
 const logEntrySchema = new mongoose.Schema({
@@ -6,10 +9,10 @@ const logEntrySchema = new mongoose.Schema({
   date: { type: Date, required: true },
   activity: { type: String, required: true },
   // category: { type: String, required: true },
-  durationUnit: { type: String, required: true },
+  durationUnit: { type: String, required: true, enum: activityNames },
   durationValue: { type: Number, required: true },
   points: Number,
-  title: {type: String},
+  title: String,
   description: String
 }, { timestamps: true });
 

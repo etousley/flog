@@ -2,24 +2,22 @@
 
 // Global variables used by multiple functions
 const CSRF_HEADER = 'X-CSRF-Token';
+const calendarOptions = {};
 
 let modal = $('#log-entry-modal');
-let modalAlert = $('.modal-alert');
-let modalDateField = modal.find('.entry-date');
-let modalTitleField = modal.find('.entry-title-field');
-let modalActivityField = modal.find('#btn-activity');
-let modalDescriptionField = modal.find('.entry-description-field');
-let modalDurationValueField = modal.find('.entry-duration-value-field');
-let modalDurationUnitField = modal.find('.entry-duration-unit');
-let modalPointsField = modal.find('.entry-points-field');
-let modalSaveButton = modal.find('.save-entry');
-let modalDeleteButton = modal.find('.delete-entry');
+let entryDateField = $('#entry-date-field');
+let entryTitleField = $('#entry-title-field');
+let entryActivityField = $('#entry-activity-field');
+let entryDescriptionField = $('#entry-description-field');
+let entryDurationValueField = $('#entry-duration-value-field');
+let entryDurationUnitField = $('#entry-duration-unit');
+let entryErrorField = $('#entry-error-field');
+let entryInfoField = $('#entry-info-field');
+let entryPointsField = $('#entry-points-field');
+let entrySaveButton = $('#entry-save-btn');
+let entryDeleteButton = $('#entry-delete-btn');
 let activeEntryElem = undefined;
 let userEmail = undefined;
-
-const calendarOptions = {
-  contentHeight: 'auto'
-}
 
 
 /**
@@ -43,6 +41,7 @@ fillLogEntries = () => {
   $('#calendar').fullCalendar({
     calendarOptions
   });
+  $('.fc-scroller').removeAttr('style');  // Defaults to fixed height, no scroll??
 
   const dayElems = $('.fc-day')
   const startDate = dayElems[0].dataset.date;
@@ -70,23 +69,29 @@ drawLogEntryModal = (clickedDayElem) => {
   const activityName = activeEntryElem.dataset.activity;
   let targetActivity = undefined;
 
-  modalDateField.html( activeEntryElem.dataset.date.slice(0, 10) );
-  modalTitleField.val(activeEntryElem.dataset.title);
-  modalDescriptionField.val(activeEntryElem.dataset.description);
-  modalDurationValueField.val(activeEntryElem.dataset.durationValue);
+  entryDateField.html( activeEntryElem.dataset.date.slice(0, 10) );
+  entryTitleField.val(activeEntryElem.dataset.title);
+  entryDescriptionField.val(activeEntryElem.dataset.description);
+  entryDurationValueField.val(activeEntryElem.dataset.durationValue);
 
   updateModalPoints(activeEntryElem.dataset);
 
-  if (activityName !== undefined && activityName !== 'Activity') {
+  if (activityName !== undefined) {
     targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
-    modalDurationUnitField.val(targetActivity.dataset.durationUnit) + 's';
-    updateElemDataset(modalActivityField, targetActivity.dataset);
-    modalActivityField.val(targetActivity);
-    modalActivityField.text(activityName);
+    entryDurationUnitField.val(targetActivity.dataset.durationUnit) + 's';
+    updateElemDataset(entryActivityField, targetActivity.dataset);
+    entryActivityField.val(targetActivity);
+    entryActivityField.text(activityName);
+  } else {
+    entryActivityField.val(undefined);
+    entryActivityField.text("Choose an activity...");
   }
 
   if (activeEntryElem && activeEntryElem.dataset._id !== undefined) {
-    modalDeleteButton.prop("disabled", false);
+    entryDeleteButton.prop("disabled", false);
+  }
+  if (activeEntryElem && activeEntryElem.dataset.activity !== undefined) {
+    entrySaveButton.prop("disabled", false);
   }
 
   modal.modal('show');
@@ -97,30 +102,36 @@ drawLogEntryModal = (clickedDayElem) => {
  * Create or update log entry
  */
  saveLogEntry = () => {
-
-   updateElemDataset(activeEntryElem, {
-     "title": modalTitleField.val(),
+   let entryData = {
+     "date": entryDateField.text(),
+     "title": entryTitleField.val(),
      "user": userEmail,
-     "activity": modalActivityField.html(),
-     "description": modalDescriptionField.val(),
-     "durationValue": modalDurationValueField.val(),
-     "durationUnit": modalActivityField.dataset.durationUnit,
-     "category": modalActivityField.dataset.category
-   });
-   updateEntryTitle(activeEntryElem.dataset);
+     "activity": entryActivityField.html(),
+     "description": entryDescriptionField.val(),
+     "durationValue": entryDurationValueField.val(),
+     "durationUnit": entryActivityField.dataset.durationUnit,
+     "category": entryActivityField.dataset.category,
+     "points": parseInt(activeEntryElem.dataset.points)
+   }
 
    if (activeEntryElem.dataset._id !== undefined) {
      // If there's already an _id, do a PUT (update)
      $.ajax({
        url: '/api/log/' + activeEntryElem.dataset._id,
        type: 'PUT',
-       data: {"data": activeEntryElem.dataset},
+       data: {"data": entryData},
        success: function(data) {
          let updatedEntry = data.data;
+         updateElemDataset(activeEntryElem, updatedEntry);
+         updateEntryTitle(activeEntryElem.dataset);
          updateModalPoints(updatedEntry);
-         modalAlert.text('Updated entry');
-         modalAlert.show();
+         entryInfoField.text('Updated entry');
+         entryInfoField.show();
          console.log('Updated entry: ' + JSON.stringify(updatedEntry));
+       },
+       error: function(error) {
+         entryErrorField.text(error.status + " error: " + error.statusText);
+         entryErrorField.show();
        }
      });
    } else {
@@ -128,15 +139,18 @@ drawLogEntryModal = (clickedDayElem) => {
      $.ajax({
        url: '/api/log/',
        type: 'POST',
-       data: {"data": activeEntryElem.dataset},
+       data: {"data": entryData},
        success: function(data) {
          let createdEntry = data.data;
-         updateModalPoints(createdEntry);
-         addEntryElem(createdEntry);
-         modalDeleteButton.prop("disabled", false);
-         modalAlert.text('Added new entry');
-         modalAlert.show();
+         addEntryElem(createdEntry);  // Will create new activeEntryElem
+         entryDeleteButton.prop("disabled", false);
+         entryInfoField.text('Added new entry');
+         entryInfoField.show();
          console.log('Created entry: ' + JSON.stringify(createdEntry));
+       },
+       error: function(error) {
+         entryErrorField.text(error.status + " error: " + error.statusText);
+         entryErrorField.show();
        }
      });
    }
@@ -152,11 +166,14 @@ drawLogEntryModal = (clickedDayElem) => {
      type: 'DELETE',
      success: function(data) {
        activeEntryElem.remove();
-       activeEntryElem.dataset = {};
-       modalDeleteButton.prop("disabled", true);
-       modalAlert.text('Deleted entry');
-       modalAlert.show();
+       entryDeleteButton.prop("disabled", true);
+       entryInfoField.text('Deleted entry');
+       entryInfoField.show();
        console.log('Deleted entry');
+     },
+     error: function(error) {
+       entryErrorField.text(error.status + " error: " + error.statusText);
+       entryErrorField.show();
      }
    });
  }
@@ -168,28 +185,38 @@ drawLogEntryModal = (clickedDayElem) => {
 addEntryElem = (entryData) => {
   const entryDate = entryData.date.slice(0, 10);
   const dayElem = document.querySelectorAll(`.fc-day[data-date='${entryDate}']`)[0];
+
   activeEntryElem = document.createElement("div");
-
   activeEntryElem.className = "btn btn-sm btn-primary log-entry-btn";
-  modalPointsField.val(entryData.points);
-
-  updateEntryTitle(entryData);
-  updateElemDataset(activeEntryElem, entryData);
-
   dayElem.appendChild(activeEntryElem);
 
-  // Make sure week row is big enough to hold all the entries :P
-  const thisRow = dayElem.parentElement.parentElement.parentElement.parentElement.parentElement;
+  updateElemDataset(activeEntryElem, entryData);
+  updateEntryTitle(entryData);
+  updateModalPoints(entryData);
+  updateRowHeight(entryDate);
+};
+
+
+/**
+ * Make sure height of week row accommodates all entries in a given day
+ */
+updateRowHeight = (entryDate) => {
+  const dayElem = document.querySelectorAll(`.fc-day[data-date='${entryDate}']`)[0];
+  const thisRow = dayElem.parentElement.parentElement.parentElement.parentElement.parentElement;  // urgh
   const thisRowHeightPx = parseInt(thisRow.style.height.replace('px', ''));
   const dayEntries = dayElem.querySelectorAll('.log-entry-btn');
+  const minRowHeightPx = 137;
   let totalHeight = 0;
+
   for (let elem of dayEntries) {
     totalHeight += elem.clientHeight;
   }
-  if (thisRowHeightPx < (totalHeight + 60)) {
-    thisRow.style.height = (totalHeight + 60) + 'px';
-  }
-};
+
+  // console.log(entryDate + ' | ' + thisRowHeightPx + ' | ' + minRowHeightPx + ' | ' + (totalHeight + 100));
+  if (thisRowHeightPx < (totalHeight + 100)) {
+    thisRow.style.height = Math.max( minRowHeightPx, (totalHeight + 100) ) + 'px';
+  } // else { shrink row -- probably unecessary }
+}
 
 
 /**
@@ -201,7 +228,7 @@ updateEntryTitle = (entryData) => {
     // console.log( activeEntryElem);
     activeEntryElem.textContent = entryData.title;
   } else {
-    activeEntryElem.textContent = entryData.activity.slice(0, 24) + " (" + entryData.points + " pts)";
+    activeEntryElem.textContent = entryData.activity + " (" + entryData.points + " pts)";
   }
 };
 
@@ -210,11 +237,15 @@ updateEntryTitle = (entryData) => {
  * Update points; If points > 0, also highlight the container
  */
 updateModalPoints = (entryData) => {
-  if (entryData.points > 0) {
-    modalPointsField.text("Earned " + entryData.points + " points!");
-    modalPointsField.show();
+  const points = parseInt(entryData.points);
+  if (points === 0) {
+    entryPointsField.text("Everything's made up and the points don't matter!");
+    entryPointsField.show();
+  } else if (points > 0) {
+    entryPointsField.text("Earned " + points + " points!");
+    entryPointsField.show();
   } else {
-    modalPointsField.hide();
+    entryPointsField.hide();
   }
 };
 
@@ -236,26 +267,52 @@ updateElemDataset = (elem, data) => {
   * Select activity from dropdown and update dataset
   */
 selectActivity = (activityElem) => {
-  modalDurationValueField.prop('disabled', true);
-  modalActivityField.html(activityElem.innerHTML);
-  modalActivityField.val(activityElem.innerHTML);
-  updateElemDataset(modalActivityField, activityElem.dataset);
+  entryDurationValueField.prop('disabled', true);
+  entryActivityField.html(activityElem.innerHTML);
+  entryActivityField.val(activityElem.innerHTML);
+  updateElemDataset(entryActivityField, activityElem.dataset);
 
   if (activityElem.dataset.durationUnit.includes('minute')) {
     // If it's a minutes-based activity, user should enter duration
-    modalDurationValueField.prop('disabled', false);
+    entryDurationValueField.prop('disabled', false);
   } else {
     // Otherwise, populate the default value and leave it disabled
-    modalDurationValueField.val(activityElem.dataset.durationValue);
+    entryDurationValueField.val(activityElem.dataset.durationValue);
   }
 
   // Pluralize units if necessary
   if (activityElem.dataset.durationValue > 1) {
-    modalDurationUnitField.html(activityElem.dataset.durationUnit + "s");
+    entryDurationUnitField.html(activityElem.dataset.durationUnit + "s");
   } else {
-    modalDurationUnitField.html(activityElem.dataset.durationUnit);
+    entryDurationUnitField.html(activityElem.dataset.durationUnit);
   }
+
+  $('#save-entry-btn').attr('disabled', false);
 };
+
+
+/**
+ * Validate entry; return list of errors
+ */
+ getEntryErrors = (entryData) => {
+  const requiredFields = ['date', 'activity', 'durationValue', 'durationUnit'];
+  const numFields = ['durationValue'];
+  let errors = [];
+
+  for (let field of requiredFields) {
+    let val = entryData[field];
+    if (val === undefined) {
+      errors.push("Required field `${field}` is undefined");
+    }
+  }
+
+  try {
+    let d = new Date(entryData.date);
+  } catch(err) {
+    errors.push("Invalid date: `${field}`");
+  }
+
+}
 
 
 /**
@@ -264,47 +321,58 @@ selectActivity = (activityElem) => {
 $(document).ready(function() {
   setCSRFToken($('meta[name="csrf-token"]').attr('content'));
 
-  userEmail = window.location.href.replace("#", "").split('/').slice(-1);
+  userEmail = window.location.href.replace("#", "").split('/').slice(-1)[0];
 
-  $('#log-entry-modal').modal('hide');
+  modal.modal('hide');
 
   // Clear old modal alerts when modal is re-opened
   modal.on('show.bs.modal', function(event) {
-    modalAlert.hide();
-  })
+    entryInfoField.hide();
+    entryErrorField.hide();
+  });
 
   fillLogEntries();
   // Redraw calendar when prev/next buttons are clicked
   $(document.body).on('click touch', '.fc-prev-button, .fc-next-button', function (event) {
     fillLogEntries();
-    // addListeners();
   });
+
+  // Trigger hover state for day when user hovers over day-top
+  $(document.body).on('mouseover', '.fc-day, .fc-day-top', function (event) {
+    if (event.target.classList.contains('fc-day') || event.target.classList.contains('fc-day-top')) {
+      const entryDate = event.target.dataset.date;
+      const dayElem = document.querySelectorAll(`.fc-day[data-date='${entryDate}']`)[0];
+      $('.fc-day.active').removeClass('active');
+      dayElem.className += ' active';
+    }
+  });
+  // Mouseout doesn't look great because of html inside cell (see: .fc-content-skeleton)
+  // $(document.body).on('mouseout', '.fc-day, .fc-day-top', function (event) {
+  //     $('.fc-day.active').removeClass('active');
+  // });
 
   // Show log entry when date is clicked
   $(document.body).on('click touch', '.fc-day, .fc-day-top, .log-entry-btn', function (event) {
     event.stopPropagation();  // Need this to click on an entry button inside a clickable day cell
-    // if (event.target.className.includes('log-entry-btn')) {
       activeEntryElem = event.target;
-    // }
-    // TODO: need better solution here
-    drawLogEntryModal(event.target);
+      drawLogEntryModal(event.target);
   });
 
   // Save log entry when Save button is clicked
-  $(document.body).on('click touch', '.save-entry', function() {
+  $(document.body).on('click touch', '#entry-save-btn', function() {
     saveLogEntry();
   });
 
   // Delete log entry when Delete button is clicked
-  $(document.body).on('click touch', '.delete-entry', function() {
+  $(document.body).on('click touch', '#entry-delete-btn', function() {
     const confirmed = confirm("Delete this entry forever?");
     if (confirmed === true) {
       deleteLogEntry();
     }
-  })
+  });
 
   // Update selected value (and html) when a dropdown option is clicked
-  $(document.body).on('click touch', '#activity-dropdown li > a', function() {
+  $(document.body).on('click touch', '#entry-activity-dropdown li > a', function() {
     selectActivity(this);
   });
 

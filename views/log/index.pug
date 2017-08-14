@@ -17,41 +17,42 @@ block content
         .modal-content
           
           .modal-header
-              h4.modal-title Log entry:
+              h4.modal-title Log Entry: 
+                span#entry-date-field {{ date }}
               button.close(type="button", data-dismiss="modal", aria-label="Close")
                 span(aria-hidden="true") ×
                 
           //- Editable modal for log owner
           if user.email === logOwner.email
             .modal-body
-              .alert-container
-                .alert.alert-info.alert-dismissable.modal-alert(role="alert")
-                  button.close(type="button" data-dismiss="alert" aria-label="Close")
-                    span(aria-hidden="true") ×
-              .input-group.vert-spaced-sm
-                span.input-group-addon.entry-date {{ date }}
-                input.form-control.entry-title-field(type="text" placeholder="Title of log entry (optional)")
+              //- .input-group.vert-spaced-sm
+              //-   span.input-group-addon.entry-date-field {{ date }}
+              //- input.form-control#entry-title-field(type="text" placeholder="Title of log entry (optional)")
               //- Required dropdown container
               .dropdown 
                 .btn-group
-                  button.btn.btn-default#btn-activity(type="button") Activity
-                  button.btn.btn-default.dropdown-toggle.dropdown-toggle-split(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false")
+                  //- button.btn.btn-default.dropdown-toggle#entry-activity-field(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") Choose an activity...
+                  button.btn.btn-default#entry-activity-field(type="button") Choose an activity...
+                  button.btn.btn-default.dropdown-toggle(type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false") 
                     span.caret
-                  ul.dropdown-menu#activity-dropdown
+                    span.sr-only Toggle Dropdown
+                  ul.dropdown-menu#entry-activity-dropdown
                     each attrs, name in activities
                       li
                         a.dropdown-item(href="#" data-duration-value=attrs.durationValue data-duration-unit=attrs.durationUnit data-points=attrs.points data-category=attrs.category)= name
-              .input-group.vert-spaced-sm
-                input.form-control.entry-duration-value-field(type="text" placeholder="Minutes (e.g. 20)")
-                span.input-group-addon.entry-duration-unit minutes
-              span.vert-spaced-sm
-                textarea.form-control.entry-description-field(placeholder="Description (optional)")
+              .input-group.vert-spaced
+                input.form-control#entry-duration-value-field(type="text" placeholder="Minutes (e.g. 20)")
+                span.input-group-addon#entry-duration-unit-field minutes
+              span.vert-spaced
+                textarea.form-control#entry-description-field(placeholder="Description (optional)")
               .alert-container
-                .alert.alert-success.entry-points-field(role="alert")
+                .alert.alert-danger#entry-error-field(role="alert")
+                .alert.alert-info#entry-info-field(role="alert")
+                .alert.alert-success#entry-points-field(role="alert")
                   
             .modal-footer
-              button.btn.btn-primary.save-entry(type="button") Save
-              button.btn.btn-warning.delete-entry(type="button", disabled="true") Delete
+              button.btn.btn-primary#entry-save-btn(type="button", disabled="true") Save
+              button.btn.btn-warning#entry-delete-btn(type="button", disabled="true") Delete
               button.btn.btn-secondary(type="button", data-dismiss="modal") Close
               
           //- Read-only modal for non-owners

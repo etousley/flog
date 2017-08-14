@@ -9,7 +9,7 @@ const lookups = require('../public/js/lookups.js');
  * Return activityDefinitions object
  */
 exports.getActivityDefinitions = (req, res) => {
-  res.send(lookups.activityDefinitions);
+  res.send(lookups.activitiesSortedAlpha);
 };
 
 
@@ -17,7 +17,7 @@ exports.getActivityDefinitions = (req, res) => {
  * Calculate points based on activity and duration
  */
 calculateActivityPoints = (logEntry) => {
-  const activityDefinition = lookups.activityDefinitions[logEntry.activity];
+  const activityDefinition = lookups.activitiesSortedAlpha[logEntry.activity];
   console.log(JSON.stringify(logEntry));
 
   // Is it the right time unit?
@@ -42,7 +42,7 @@ exports.getLog = (req, res) => {
     title: 'My Log',
     user: req.user,
     logOwner: {email: req.url.split("/").slice(-1)[0]},
-    activities: lookups.activityDefinitions
+    activities: lookups.activitiesSortedAlpha
   });
 };
 

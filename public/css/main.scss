@@ -30,9 +30,9 @@ footer {
   }
 }
 
-.vert-spaced-sm {
-  margin-top: 3px;
-  margin-bottom: 3px;
+.vert-spaced {
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 // Input Fields
@@ -80,22 +80,26 @@ textarea {
   padding-top: 2em;
   resize: both;
   overflow: auto;
-}
-
-.fc-day {
   cursor: pointer;
 }
 
-.fc-day:hover {
-  background-color: #d9edf7;
+// Hack to treat .fc-day:hover and .fc-day-top:hover the same way with JS
+.fc-day.active {
+  background-color: #d9edf7 !important;
+}
+
+.fc-day-number {
+  cursor: auto;
 }
 
 .fc-day-top {
   cursor: pointer;
+  // border-bottom: 1px dotted #eaeaea !important;
+  // May need to use JS listener to get hover behavior to match .fc-day:hover
 }
 
 .fc-row .fc-content-skeleton {
-  cursor: pointer;
+  cursor: auto;
 }
 
 .fc .log-entry-btn {
@@ -124,6 +128,10 @@ textarea {
 .modal-header > .close {
   max-width: 10%;
   float: right;
+}
+
+.entry-activity-field > .caret {
+  margin-left: 1em;
 }
 
 // .entry-duration-value-input {

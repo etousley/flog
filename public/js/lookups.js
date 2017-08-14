@@ -1,70 +1,75 @@
-exports.activityDefinitions = {
+
+exports.activities1Pt = {
   "Air hockey/foosball": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Baseball/softball": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Bowling": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Croquet": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Curling/shuffleboard": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Driving range": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Golf (with cart)": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Playing catch": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Stretching": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Table tennis": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
+  	"durationValue": 20,
+  	"durationUnit": "minute"
   },
   "Walking (casual pace)": {
     "category": "Activities",
     "points": 1,
-		"durationValue": 20,
-		"durationUnit": "minute"
-  },
+  	"durationValue": 20,
+  	"durationUnit": "minute"
+  }
+};
+
+
+exports.activities2Pt = {
   "Aerobics/Tai Chi/Pilates/Yoga": {
     "category": "Activities",
     "points": 2,
@@ -160,7 +165,11 @@ exports.activityDefinitions = {
     "points": 2,
 		"durationValue": 20,
 		"durationUnit": "minute"
-  },
+  }
+};
+
+
+exports.activities3pt = {
   "Advanced cardio (CrossFit, etc.)": {
     "category": "Activities",
     "points": 3,
@@ -257,48 +266,64 @@ exports.activityDefinitions = {
 		"durationValue": 20,
 		"durationUnit": "minute"
   },
+};
 
-  // Bonus points
+exports.healthyBehaviors = {
   "Walking/biking to work": {
-    "category": "Bonus",
+    "category": "Healthy Behaviors",
     "points": 3,
     "durationValue": 1,
 		"durationUnit": "day"
   },
   "Eating a healthy breakfast": {
-    "category": "Healthy Behavior",
+    "category": "Healthy Behaviors",
     "points": 1,
 		"durationValue": 1,
 		"durationUnit": "day"
   },
   "Drinking 6+ (8 oz) glasses of water": {
-    "category": "Healthy Behavior",
+    "category": "Healthy Behaviors",
     "points": 2,
 		"durationValue": 1,
 		"durationUnit": "day"
   },
   "Eating 2 Fruits": {
-    "category": "Healthy Behavior",
+    "category": "Healthy Behaviors",
     "points": 2,
 		"duration": {"value": 1, "unit": "day"}
   },
   "Eating 3 vegetables": {
-    "category": "Healthy Behavior",
+    "category": "Healthy Behaviors",
     "points": 2,
 		"durationValue": 1,
 		"durationUnit": "day"
   },
   "Joining a gym": {
-    "category": "Healthy Behavior",
+    "category": "Healthy Behaviors",
     "points": 5,
 		"durationValue": 1,
 		"durationUnit": "year"
   },
   "Weight loss: 1 lb.": {
     "description": "5 points per pound of weight lost in a given week, up to 2 pounds per week",
-    "category": "Healthy Behavior",
+    "category": "Healthy Behaviors",
     "points": 5,
 		"durationValue": 1,
 		"durationUnit": "week"
   }
-}
+};
+
+exports.activityDefinitions = Object.assign(
+  {},
+  exports.activities1Pt,
+  exports.activities2Pt,
+  exports.activities3pt,
+  exports.healthyBehaviors
+);
+
+exports.activitiesSortedAlpha = {};
+Object.keys(exports.activityDefinitions)
+    .sort()
+    .forEach(function(k, i) {
+    	exports.activitiesSortedAlpha[k] = exports.activityDefinitions[k];
+	});
