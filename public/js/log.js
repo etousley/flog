@@ -287,7 +287,7 @@ selectActivity = (activityElem) => {
     entryDurationUnitField.html(activityElem.dataset.durationUnit);
   }
 
-  $('#save-entry-btn').attr('disabled', false);
+  entrySaveButton.attr('disabled', false);
 };
 
 
