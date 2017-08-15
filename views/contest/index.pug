@@ -1,0 +1,31 @@
+extends ../layout
+
+block content
+  h2 Contests
+  
+  hr
+    
+  
+  table
+    thead
+      tr
+        th start date
+        th end date
+        th team
+        th team points
+        th team rank
+        th user
+        th user points
+    tbody
+      each result in contestUserResults
+        tr
+          td result.startDate
+          td result.endDate
+          td result.team
+          td result.teamPoints
+          td result.teamRank
+          td result.user
+          td result.userPoints
+          
+  script
+    include ../../public/js/contest.js

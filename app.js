@@ -30,6 +30,7 @@ dotenv.load({ path: '.env' });
 const homeController = require('./controllers/home');
 const userController = require('./controllers/user');
 const logEntryController = require('./controllers/logEntry');
+const contestController = require('./controllers/contest')
 
 /**
  * API keys and Passport configuration.
@@ -110,6 +111,7 @@ app.use((req, res, next) => {
 });
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }));
 
+
 /**
  * Primary app routes.
  */
@@ -122,7 +124,9 @@ app.post('/reset/:token', userController.postReset);
 app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
 app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
-app.get('/log/:id', passportConfig.isAuthenticated, logEntryController.getLog);
+app.get('/log/:id', passportConfig.isAuthenticated, logEntryController.renderLog);
+app.get('/contest/', passportConfig.isAuthenticated, contestController.renderContest);
+
 
 /**
  * REST API routes
@@ -145,6 +149,7 @@ app.delete('/api/log/:id', passportConfig.isAuthenticated, logEntryController.de
 // Get all activity definitions
 app.get('/api/activity', passportConfig.isAuthenticated, logEntryController.getActivityDefinitions);
 
+
 /**
  * OAuth authentication routes. (Sign in)
  */
@@ -152,6 +157,7 @@ app.get('/auth/google', passport.authenticate('google', { scope: 'profile email'
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   res.redirect(req.session.returnTo || '/');
 });
+
 
 /**
  * Error Handler.

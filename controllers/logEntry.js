@@ -37,7 +37,7 @@ calculateActivityPoints = (logEntry) => {
  * GET /log
  * Render logEntry log template
  */
-exports.getLog = (req, res) => {
+exports.renderLog = (req, res) => {
   res.render('log/index', {
     title: 'My Log',
     user: req.user,

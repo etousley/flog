@@ -4,6 +4,9 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
+  team: String,
+  isCompetitor: {type: Boolean, default: true},
+  isCaptain: {type: Boolean, default: false},
 
   google: String,
   tokens: Array,
