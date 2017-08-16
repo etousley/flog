@@ -2,7 +2,6 @@
 
 // Global variables used by multiple functions
 const CSRF_HEADER = 'X-CSRF-Token';
-const calendarOptions = {};
 
 let modal = $('#log-entry-modal');
 let entryDateField = $('#entry-date-field');
@@ -39,8 +38,9 @@ setCSRFToken = (securityToken) => {
 fillLogEntries = () => {
   // Draw calendar
   $('#calendar').fullCalendar({
-    calendarOptions
+    fixedWeekCount: false  // Defaults to true, which forces all months to 6 weeks
   });
+
   $('.fc-scroller').removeAttr('style');  // Defaults to fixed height, no scroll??
 
   const dayElems = $('.fc-day')

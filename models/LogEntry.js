@@ -13,7 +13,9 @@ const logEntrySchema = new mongoose.Schema({
   durationValue: { type: Number, required: true },
   points: Number,
   title: String,
-  description: String
+  description: String,
+  team: String,
+  contest: String
 }, { timestamps: true });
 
 

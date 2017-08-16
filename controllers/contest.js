@@ -1,28 +1,39 @@
 const bluebird = require('bluebird');
 const request = bluebird.promisifyAll(require('request'), { multiArgs: true });
-const moment = require('moment');
-const dateMask = 'YYYY-MM-DD';
+const LogEntry = require('../models/LogEntry');
+
 
 /**
- * GET /team
- * Render team template
+ * GET /contest
+ * Render contest template
  */
 exports.renderContest = (req, res) => {
-  const today = moment().startOf('day').format(dateMask);
-  const tomorrow = moment(today).add(1, 'days').format(dateMask);
-  const entriesTodayQuery = {"date": { "$gte": today, "$lt": tomorrow } };
+  const contestUserQuery = {
+    _id: { team: "$team", user: "$user", contest: "$contest" },
+    userPoints: { $sum: "$points" }
+  };
 
-  console.log(entriesTodayQuery);
+  res.render('contest/index', {
+    title: 'Contests',
+    user: req.user,
+  });
+};
 
-  LogEntry.count(entriesTodayQuery, function(err, result) {
+
+/**
+ * Get user point totals, grouped by contest. Include team data for later
+ */
+getContestUserPoints = () => {
+  const contestUserQuery = {
+    _id: { team: "$team", user: "$user", contest: "$contest" },
+    userPoints: { $sum: "$points" }
+  };
+  LogEntry.aggregate(contestUserQuery, function(err, result) {
     if (err) {
       res.status(500).send({"error": err})
     } else {
       console.log(result);
-      res.render('contest/index', {
-        title: 'Contests',
-        user: req.user,
-      });
+      return result;
     }
   });
 };

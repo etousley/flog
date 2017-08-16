@@ -1,59 +1,64 @@
+const moment = require('moment');
 
-exports.teamUsers = [
-  {"email": "kyra.padula@readingplus.com", "team": "Get Fit or Die Tryin'", "isCaptain": true, "isCompetitor": false},
-  {"email": "tracie.spencer@readingplus.com", "team": "Get Fit or Die Tryin'", "isCaptain": false, "isCompetitor": true},
-  {"email": "elias.tousley@readingplus.com", "team": "Get Fit or Die Tryin'", "isCaptain": false, "isCompetitor": true},
-  {"email": "sean.cross@readingplus.com", "team": "Get Fit or Die Tryin'", "isCaptain": false, "isCompetitor": true},
-  {"email": "chris.eide@readingplus.com", "team": "Get Fit or Die Tryin'", "isCaptain": false, "isCompetitor": true},
-  {"email": "kim.mcgimsey@readingplus.com", "team": "Get Fit or Die Tryin'", "isCaptain": false, "isCompetitor": true},
-  {"email": "mark@readingplus.com", "team": "Mark's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "roger.harris@readingplus.com", "team": "Mark's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "donna.Freisinger@readingplus.com", "team": "Mark's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "carrie.ladd@readingplus.com", "team": "Mark's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "brett@readingplus.com", "team": "Mark's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "jonah.allibone@readingplus.com", "team": "Mark's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "reinhold.lange@readingplus.com", "team": "Reinhold's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "andrew@readingplus.com", "team": "Reinhold's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "Sarah.Hoerr@readingplus.com", "team": "Reinhold's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "tony.ferro@readingplus.com", "team": "Reinhold's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "nicholas.means@readingplus.com", "team": "Reinhold's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "alex@readingplus.com", "team": "Alex's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "jesse.guertin@readingplus.com", "team": "Alex's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "jenny@readingplus.com", "team": "Alex's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "evan.kidder@readingplus.com", "team": "Alex's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "tami.zylka@readingplus.com", "team": "Alex's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "eric.bauer@readingplus.com", "team": "Eric's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "erica.jones@readingplus.com", "team": "Eric's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "bethany@readingplus.com", "team": "Eric's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "prajwal.shrestha@readingplus.com", "team": "Eric's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "eric@readingplus.com", "team": "Eric's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "randi@readingplus.com", "team": "Randi's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "emily.leblanc@readingplus.com", "team": "Randi's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "greg.falla@readingplus.com", "team": "Randi's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "sanela.smaka@readingplus.com", "team": "Randi's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "rachel.ring@readingplus.com", "team": "Randi's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "rick@readingplus.com", "team": "Rick's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "liz.batsford@readingplus.com", "team": "Rick's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "jennifer@readingplus.com", "team": "Rick's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "john.ferrara@readingplus.com", "team": "Rick's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "jeff.laughlin@readingplus.com", "team": "Rick's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "Michael.Lascelles@readingplus.com", "team": "Michael's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "Ishmael.Ahmed@readingplus.com", "team": "Michael's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "jeff.pascoe@readingplus.com", "team": "Michael's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "kerry.mescallado@readingplus.com", "team": "Michael's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "beth.szymanski@readingplus.com", "team": "Michael's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "kelly@readingplus.com", "team": "Kelly's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "leah.allen@readingplus.com", "team": "Kelly's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "jason@readingplus.com", "team": "Kelly's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "Helen.Tot@readingplus.com", "team": "Kelly's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "alicia.gagne@readingplus.com", "team": "Kelly's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "joel.brown@readingplus.com", "team": "Joel's Team", "isCaptain": true, "isCompetitor": true},
-  {"email": "vincent.bouchard@readingplus.com", "team": "Joel's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "mike.morgan@readingplus.com", "team": "Joel's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "carl.severance@readingplus.com", "team": "Joel's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "marybeth.nuovo@readingplus.com", "team": "Joel's Team", "isCaptain": false, "isCompetitor": true},
-  {"email": "christopher.sandvik@readingplus.com", "team": "Joel's Team", "isCaptain": false, "isCompetitor": true}
-];
+
+exports.contests = {
+  "Test Contest": {
+    "startDate": moment().set({"year": 2017, "month": 8, "day": 1}),
+    "endDate": moment().set({"year": 2017, "month": 9, "day": 1})
+  },
+  "September 2017 Contest": {
+    "startDate": moment().set({"year": 2017, "month": 9, "day": 1}),
+    "endDate": moment().set({"year": 2017, "month": 10, "day": 1})
+  },
+  "October 2017 Contest": {
+    "startDate": moment().set({"year": 2017, "month": 10, "day": 1}),
+    "endDate": moment().set({"year": 2017, "month": 11, "day": 1})
+  },
+  "November 2017 Contest": {
+    "startDate": moment().set({"year": 2017, "month": 11, "day": 1}),
+    "endDate": moment().set({"year": 2017, "month": 12, "day": 1})
+  },
+  "December 2017 Contest": {
+    "startDate": moment().set({"year": 2017, "month": 12, "day": 1}),
+    "endDate": moment().set({"year": 2017, "month": 1, "day": 1})
+  },
+  "January 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 1, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 2, "day": 1})
+  },
+  "February 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 2, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 3, "day": 1})
+  },
+  "March 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 3, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 4, "day": 1})
+  },
+  "April 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 4, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 5, "day": 1})
+  },
+  "May 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 5, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 6, "day": 1})
+  },
+  "June 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 6, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 7, "day": 1})
+  },
+  "July 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 7, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 8, "day": 1})
+  },
+  "August 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 8, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 9, "day": 1})
+  },
+  "September 2018 Contest": {
+    "startDate": moment().set({"year": 2018, "month": 9, "day": 1}),
+    "endDate": moment().set({"year": 2018, "month": 10, "day": 1})
+  }
+};
 
 exports.activities1Pt = {
   "Air hockey/foosball": {

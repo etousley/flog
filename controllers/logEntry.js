@@ -1,8 +1,8 @@
 const bluebird = require('bluebird');
 const request = bluebird.promisifyAll(require('request'), { multiArgs: true });
-const moment = require('moment');
 const LogEntry = require('../models/LogEntry');
 const lookups = require('../public/js/lookups.js');
+const userTeams = require('../controllers/user.js').userTeams;
 
 
 /**
@@ -150,6 +150,7 @@ exports.updateLogEntry = (req, res) => {
   const id = req.params.id;
   const requesterEmail = req.user.email;
   const ownerEmail = entryData.user;
+  const teamInfo = userTeams[ownerEmail];
 
    // durationUnit should be singular
   if (entryData.durationUnit && entryData.durationUnit.endsWith('s')) {
@@ -157,6 +158,9 @@ exports.updateLogEntry = (req, res) => {
   }
 
   entryData.points = calculateActivityPoints(entryData);
+  if (teamInfo.isCompetitor) {
+    entryData.team = teamInfo.team;
+  }
 
   if (requesterEmail === ownerEmail) {
     // Mongoose returns original object instead of updated object by default (?????)

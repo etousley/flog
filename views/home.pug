@@ -7,19 +7,20 @@ block content
   .row
     .col-sm-6
       h2 Welcome to flog!
-      p It's a work in progress. If you find a bug, please 
-        a(href='https://github.com/etousley/flog/issues') submit an issue report!
         
       if user !== undefined && user.email.endsWith('@readingplus.com')
         //- p Log entries created today: #{entriesToday}
-        a(href='/log/' + user.email) View/edit your log
+        p
+          a(href='/log/' + user.email) View/edit your log
       else  
         form.form-horizontal(method='POST')
           input(type='hidden', name='_csrf', value=_csrf)
-          .form-group
-              a.btn.btn-google.btn-social(href='/auth/google')
-                i.fa.fa-google-plus
-                | Sign in with Google
+          p 
+            a.btn.btn-google.btn-social(href='/auth/google')
+              i.fa.fa-google-plus
+              | Sign in with Google
+      p flog is a work in progress. If you find a bug, please 
+        a(href='https://github.com/etousley/flog/issues') submit an issue report
 
       //- p
       //-   a.btn.btn-default(href='#', role='button') View details »
