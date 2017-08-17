@@ -1,10 +1,10 @@
 FROM node:6-slim
 
-COPY . /starter
-COPY package.json /starter/package.json
-COPY .env.example /starter/.env.example
+COPY . /flog
+COPY package.json /flog/package.json
+COPY .env.example /flog/.env.example
 
-WORKDIR /starter
+WORKDIR /flog
 
 ENV NODE_ENV production
 RUN yarn install --production
