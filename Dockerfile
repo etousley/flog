@@ -2,7 +2,7 @@ FROM node:6-slim
 
 COPY . /flog
 COPY package.json /flog/package.json
-COPY .env.example /flog/.env.example
+COPY .env.example /flog/.env
 
 WORKDIR /flog
 
