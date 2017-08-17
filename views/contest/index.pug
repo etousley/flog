@@ -38,8 +38,9 @@ block content
             each user, index in contest.users
               tr
                 td #{index + 1}
-                td #{user.name}
-                //- td #{user.name.replace('@readingplus.com', '')}
+                  
+                td 
+                  a(href="/log/" + user.name) #{user.name}
                 td #{user.team}
                 td #{user.points}
     hr
