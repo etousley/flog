@@ -9,6 +9,7 @@ WORKDIR /flog
 ENV NODE_ENV production
 RUN yarn install --production
 
+RUN npm install
 CMD ["npm","start"]
 
 EXPOSE 8888

@@ -1,12 +1,13 @@
 {
-  "name": "hackathon-starter",
-  "version": "4.3.0",
-  "description": "A boilerplate for Node.js web applications",
+  "name": "flog",
+  "version": "1.0.0",
+  "description": "Webapp to track employees' fitness progress",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sahat/hackathon-starter.git"
+    "url": "https://github.com/etousley/flog.git"
   },
-  "author": "Sahat Yalkabov",
+  "author": "etousley",
+  "main": "app.js",
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
@@ -29,6 +30,7 @@
     "express-status-monitor": "^0.1.5",
     "express-validator": "^3.1.2",
     "lusca": "^1.4.1",
+    "moment": "^2.18.1",
     "mongoose": "^4.6.6",
     "morgan": "^1.7.0",
     "node-sass-middleware": "^0.11.0",
