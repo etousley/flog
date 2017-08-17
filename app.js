@@ -125,7 +125,7 @@ app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
 app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userController.getOauthUnlink);
 app.get('/log/:id', passportConfig.isAuthenticated, logEntryController.renderLog);
-app.get('/contest/', passportConfig.isAuthenticated, contestController.renderContest);
+app.get('/contest', passportConfig.isAuthenticated, contestController.renderContest);
 
 
 /**

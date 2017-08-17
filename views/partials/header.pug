@@ -16,6 +16,9 @@
         if user
           li(class=(title == 'My Log') ? 'active' : undefined)
             a(href='/log/' + user.email) My Log
+        if user
+          li(class=(title == 'Contests') ? 'active' : undefined)
+            a(href='/contest') Contests
         //- li
         //-   a(href='/status') Status
       ul.nav.navbar-nav.navbar-right

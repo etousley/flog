@@ -25,7 +25,7 @@ block content
           //- Editable modal for log owner
           if user.email === logOwner.email
             .modal-body
-              //- .input-group.vert-spaced-sm
+              //- .input-group.top-buffer-md-sm
               //-   span.input-group-addon.entry-date-field {{ date }}
               //- input.form-control#entry-title-field(type="text" placeholder="Title of log entry (optional)")
               //- Required dropdown container
@@ -40,10 +40,10 @@ block content
                     each attrs, name in activities
                       li
                         a.dropdown-item(href="#" data-duration-value=attrs.durationValue data-duration-unit=attrs.durationUnit data-points=attrs.points data-category=attrs.category)= name
-              .input-group.vert-spaced
+              .input-group.top-buffer-md
                 input.form-control#entry-duration-value-field(type="text" placeholder="Minutes (e.g. 20)")
                 span.input-group-addon#entry-duration-unit-field minutes
-              span.vert-spaced
+              span.top-buffer-md
                 textarea.form-control#entry-description-field(placeholder="Description (optional)")
               .alert-container
                 .alert.alert-danger#entry-error-field(role="alert")
@@ -58,15 +58,15 @@ block content
           //- Read-only modal for non-owners
           else 
             .modal-body
-              .input-group.vert-spaced-sm
+              .input-group.top-buffer-md-sm
                 span.input-group-addon.entry-date {{ date }}
                 .form-control.entry-title(type="text" placeholder="Title of log entry (optional)")
-              .input-group.vert-spaced-sm
+              .input-group.top-buffer-md-sm
                 .entry-activity(placeholder="Activity type...")
-              .input-group.vert-spaced-sm 
+              .input-group.top-buffer-md-sm 
                 .entry-duration-value(type="text" placeholder="Minutes (e.g. 20)")
                 .input-group-addon minutes
-              span.vert-spaced-sm
+              span.top-buffer-md-sm
                 .entry-description(placeholder="Description (optional)")
             .modal-footer
               button.btn.btn-secondary(type="button", data-dismiss="modal") Close

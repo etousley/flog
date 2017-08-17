@@ -4,23 +4,38 @@ block content
   h1 flog: A Reading Plus fitness log
   p.lead At least it's not spreadsheets.
   hr
+    
   .row
     .col-sm-6
       h2 Welcome to flog!
         
       if user !== undefined && user.email.endsWith('@readingplus.com')
         //- p Log entries created today: #{entriesToday}
-        p
-          a(href='/log/' + user.email) View/edit your log
+        .btn-group
+          a.btn.btn-primary(href='/log/' + user.email) View/edit your log
+          a.btn.btn-primary(href='/contest') View contest results
+        .top-buffer-lg
+          h4 Today's entries
+          table.table
+            thead
+              tr
+                th user
+                th activity
+                th points
+            tbody
+              each entry in entriesToday
+                tr
+                  td  
+                    a(href="/log/" + entry.user) #{entry.user}
+                  td #{entry.activity}
+                  td #{entry.points}
+        
       else  
         form.form-horizontal(method='POST')
           input(type='hidden', name='_csrf', value=_csrf)
-          p 
-            a.btn.btn-google.btn-social(href='/auth/google')
-              i.fa.fa-google-plus
-              | Sign in with Google
-      p flog is a work in progress. If you find a bug, please 
-        a(href='https://github.com/etousley/flog/issues') submit an issue report
+          a.btn.btn-google.btn-social(href='/auth/google')
+            i.fa.fa-google-plus
+            | Sign in with Google
 
       //- p
       //-   a.btn.btn-default(href='#', role='button') View details »

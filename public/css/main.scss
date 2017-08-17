@@ -30,9 +30,12 @@ footer {
   }
 }
 
-.vert-spaced {
-  margin-top: 8px;
-  margin-bottom: 8px;
+.top-buffer-md {
+  margin-top: 16px;
+}
+
+.top-buffer-lg {
+  margin-top: 32px;
 }
 
 // Input Fields

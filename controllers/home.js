@@ -1,11 +1,34 @@
+const moment = require('moment');
+const LogEntry = require('../models/LogEntry');
+const dateMask = "YYYY-MM-DD";
 
 /**
  * GET /
  * Home page.
  */
 exports.index = (req, res) => {
-  res.render('home', {
-    title: 'Home',
-    user: req.user,
-  });
+ const today = moment().startOf('day').format(dateMask);
+ const tomorrow = moment(today).add(1, 'days').format(dateMask);
+ const entriesTodayQuery = {"date": { "$gte": today, "$lt": tomorrow } };
+
+ console.log(entriesTodayQuery);
+
+ LogEntry.find(entriesTodayQuery, function(err, result) {
+   if (err) {
+     res.status(500).send({"error": err})
+   } else {
+     console.log(result);
+     res.render('home', {
+       title: 'Home',
+       user: req.user,
+       entriesToday: result
+     });
+   }
+ });
 };
+// exports.index = (req, res) => {
+//   res.render('home', {
+//     title: 'Home',
+//     user: req.user,
+//   });
+// };

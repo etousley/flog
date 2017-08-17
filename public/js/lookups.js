@@ -3,60 +3,60 @@ const moment = require('moment');
 
 exports.contests = {
   "Test Contest": {
-    "startDate": moment().set({"year": 2017, "month": 8, "day": 1}),
-    "endDate": moment().set({"year": 2017, "month": 9, "day": 1})
+    "startDate": moment('2017-08-01'),
+    "endDate": moment("2017-09-01")
   },
   "September 2017 Contest": {
-    "startDate": moment().set({"year": 2017, "month": 9, "day": 1}),
-    "endDate": moment().set({"year": 2017, "month": 10, "day": 1})
+    "startDate": moment("2017-09-01"),
+    "endDate": moment("2017-10-01")
   },
   "October 2017 Contest": {
-    "startDate": moment().set({"year": 2017, "month": 10, "day": 1}),
-    "endDate": moment().set({"year": 2017, "month": 11, "day": 1})
+    "startDate": moment("2017-10-01"),
+    "endDate": moment("2017-11-01")
   },
   "November 2017 Contest": {
-    "startDate": moment().set({"year": 2017, "month": 11, "day": 1}),
-    "endDate": moment().set({"year": 2017, "month": 12, "day": 1})
+    "startDate": moment("2017-11-01"),
+    "endDate": moment("2017-12-01")
   },
   "December 2017 Contest": {
-    "startDate": moment().set({"year": 2017, "month": 12, "day": 1}),
-    "endDate": moment().set({"year": 2017, "month": 1, "day": 1})
+    "startDate": moment("2017-12-01"),
+    "endDate": moment("2018-01-01")
   },
   "January 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 1, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 2, "day": 1})
+    "startDate": moment("2018-01-01"),
+    "endDate": moment("2018-02-01")
   },
   "February 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 2, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 3, "day": 1})
+    "startDate": moment("2018-02-01"),
+    "endDate": moment("2018-03-01")
   },
   "March 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 3, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 4, "day": 1})
+    "startDate": moment("2018-03-01"),
+    "endDate": moment("2018-04-01")
   },
   "April 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 4, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 5, "day": 1})
+    "startDate": moment("2018-04-01"),
+    "endDate": moment("2018-05-01")
   },
   "May 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 5, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 6, "day": 1})
+    "startDate": moment("2018-05-01"),
+    "endDate": moment("2018-06-01")
   },
   "June 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 6, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 7, "day": 1})
+    "startDate": moment("2018-06-01"),
+    "endDate": moment("2018-07-01")
   },
   "July 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 7, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 8, "day": 1})
+    "startDate": moment("2018-07-01"),
+    "endDate": moment("2018-08-01")
   },
   "August 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 8, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 9, "day": 1})
+    "startDate": moment("2018-08-01"),
+    "endDate": moment("2018-09-01")
   },
   "September 2018 Contest": {
-    "startDate": moment().set({"year": 2018, "month": 9, "day": 1}),
-    "endDate": moment().set({"year": 2018, "month": 10, "day": 1})
+    "startDate": moment("2018-09-01"),
+    "endDate": moment("2018-10-01")
   }
 };
 

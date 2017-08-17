@@ -5,27 +5,44 @@ block content
   
   hr
     
-  
-  table
-    thead
-      tr
-        th start date
-        th end date
-        th team
-        th team points
-        th team rank
-        th user
-        th user points
-    tbody
-      each result in contestUserResults
-        tr
-          td result.startDate
-          td result.endDate
-          td result.team
-          td result.teamPoints
-          td result.teamRank
-          td result.user
-          td result.userPoints
+  each contest in contests
+    h3 #{contest.name} (#{contest.startDate} to #{contest.endDate})
+    
+    .row
+      .col-md-12
+        h4 Team Results
+        table.table
+          thead
+            tr
+              th team rank
+              th team
+              th team points
+          tbody
+            each team, index in contest.teams
+              tr
+                td #{index + 1}
+                td #{team.name}
+                td #{team.points}
+      
+    .row
+      .col-md-12
+        h4 User Results
+        table.table
+          thead
+            tr
+              th user rank
+              th user
+              th team
+              th user points
+          tbody
+            each user, index in contest.users
+              tr
+                td #{index + 1}
+                td #{user.name}
+                //- td #{user.name.replace('@readingplus.com', '')}
+                td #{user.team}
+                td #{user.points}
+    hr
           
   script
     include ../../public/js/contest.js

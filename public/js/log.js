@@ -169,6 +169,7 @@ drawLogEntryModal = (clickedDayElem) => {
        entryDeleteButton.prop("disabled", true);
        entryInfoField.text('Deleted entry');
        entryInfoField.show();
+       entryPointsField.hide();
        console.log('Deleted entry');
      },
      error: function(error) {
