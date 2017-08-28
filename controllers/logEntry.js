@@ -3,7 +3,7 @@ const request = bluebird.promisifyAll(require('request'), { multiArgs: true });
 const LogEntry = require('../models/LogEntry');
 const lookups = require('../public/js/lookups.js');
 const userTeams = require('../controllers/user.js').userTeams;
-
+const contest = require('../controllers/contest.js');
 
 /**
  * Return activityDefinitions object
@@ -18,7 +18,7 @@ exports.getActivityDefinitions = (req, res) => {
  */
 calculateActivityPoints = (logEntry) => {
   const activityDefinition = lookups.activitiesSortedAlpha[logEntry.activity];
-  console.log(JSON.stringify(logEntry));
+  // console.log(JSON.stringify(logEntry));
 
   // Is it the right time unit?
   if (logEntry.durationUnit !== activityDefinition.durationUnit) {
@@ -27,7 +27,7 @@ calculateActivityPoints = (logEntry) => {
 
   const completedTimeChunks = Math.floor(logEntry.durationValue / activityDefinition.durationValue);
   const points = completedTimeChunks * activityDefinition.points;
-  console.log("calculated points: " + points);
+  // console.log("calculated points: " + points);
 
   return points;
 };
@@ -75,8 +75,10 @@ exports.getLogEntries = (req, res) => {
 
   LogEntry.find(filter, function(err, logEntries) {
     if (err) {
+      console.log(err);
       res.status(500).send({"error": err})
     } else {
+      // console.log(logEntries;)
       res.send({ "data": logEntries });
     }
   });
@@ -96,7 +98,7 @@ exports.getLogEntry = (req, res) => {
       res.statusMessage = err.toString();
       res.status(500).end();
     } else {
-      console.log(logEntry);
+      // console.log(logEntry);
       res.send({ "data": logEntry });
     }
   });
@@ -120,8 +122,9 @@ exports.createLogEntry = (req, res) => {
     }
 
     entry.points = calculateActivityPoints(entry);
+    entry.contest = getActiveContestName(entry);
 
-    // Note: Mongoose bug: Model.create() and instance.save() never execute callback
+    // Note: Mongoose bug: Model.create() and instance.save() don't execute callback?
     // Workaround: Use $__save()
     // https://github.com/Automattic/mongoose/issues/4064
     entry.$__save({}, function(err, createdEntry) {
@@ -130,7 +133,7 @@ exports.createLogEntry = (req, res) => {
         res.statusMessage = err.toString();
         res.status(500).end();
       } else {
-        console.log('created:' + JSON.stringify(createdEntry));
+        console.log('created: ' + JSON.stringify(createdEntry));
         res.send({ "data": createdEntry });
       }
     });
@@ -158,6 +161,7 @@ exports.updateLogEntry = (req, res) => {
   }
 
   entryData.points = calculateActivityPoints(entryData);
+  entryData.contest = getActiveContestName(entryData);
   if (teamInfo.isCompetitor) {
     entryData.team = teamInfo.team;
   }

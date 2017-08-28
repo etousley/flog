@@ -1,6 +1,3 @@
-
-
-// Global variables used by multiple functions
 const CSRF_HEADER = 'X-CSRF-Token';
 
 let modal = $('#log-entry-modal');
@@ -9,7 +6,8 @@ let entryTitleField = $('#entry-title-field');
 let entryActivityField = $('#entry-activity-field');
 let entryDescriptionField = $('#entry-description-field');
 let entryDurationValueField = $('#entry-duration-value-field');
-let entryDurationUnitField = $('#entry-duration-unit');
+let entryDurationUnitField = $('#entry-duration-unit-field');
+let entryContestField = $('#entry-contest-field');
 let entryErrorField = $('#entry-error-field');
 let entryInfoField = $('#entry-info-field');
 let entryPointsField = $('#entry-points-field');
@@ -47,7 +45,7 @@ fillLogEntries = () => {
   const startDate = dayElems[0].dataset.date;
   const endDate = dayElems[dayElems.length - 1].dataset.date;
   const getLogEntriesUrl = '/api/log?' + jQuery.param({
-    "email": userEmail,
+    "user": userEmail,
     "from": startDate,
     "to": endDate
   });
@@ -63,26 +61,37 @@ fillLogEntries = () => {
  * Render and display modal to reflect data (date, user, existing activities)
  */
 drawLogEntryModal = (clickedDayElem) => {
-  // console.log('in drawLogEntryModal, activeEntryElem: ');
-  // console.log( activeEntryElem);
-
   const activityName = activeEntryElem.dataset.activity;
   let targetActivity = undefined;
+  let logOwner = activeEntryElem.dataset.user;
+
+  // If non-owner clicks an empty date, nothing should happen
+  // if (userEmail !== logOwner && !activityName) {
+  //   return;
+  // }
 
   entryDateField.html( activeEntryElem.dataset.date.slice(0, 10) );
   entryTitleField.val(activeEntryElem.dataset.title);
   entryDescriptionField.val(activeEntryElem.dataset.description);
   entryDurationValueField.val(activeEntryElem.dataset.durationValue);
+  entryContestField.val(activeEntryElem.dataset.contest);
+  // console.log(activeEntryElem.dataset);
 
   updateModalPoints(activeEntryElem.dataset);
 
-  if (activityName !== undefined) {
+  if (activeEntryElem.dataset.activity) {
+    // Activity has already been saved
+    entryActivityField.val(activeEntryElem.dataset.activity);
+    entryActivityField.text(activeEntryElem.dataset.activity);
+  } else if (logOwner && userEmail === logOwner) {
+    // Log owner is saving activity for the first time
     targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
     entryDurationUnitField.val(targetActivity.dataset.durationUnit) + 's';
     updateElemDataset(entryActivityField, targetActivity.dataset);
     entryActivityField.val(targetActivity);
     entryActivityField.text(activityName);
   } else {
+    // Activity hasn't been chosen yet
     entryActivityField.val(undefined);
     entryActivityField.text("Choose an activity...");
   }
@@ -109,9 +118,8 @@ drawLogEntryModal = (clickedDayElem) => {
      "activity": entryActivityField.html(),
      "description": entryDescriptionField.val(),
      "durationValue": entryDurationValueField.val(),
-     "durationUnit": entryActivityField.dataset.durationUnit,
-     "category": entryActivityField.dataset.category,
-     "points": parseInt(activeEntryElem.dataset.points)
+     "durationUnit": entryDurationUnitField.text(),
+    //  "category": entryActivityField.dataset.category
    }
 
    if (activeEntryElem.dataset._id !== undefined) {
@@ -122,9 +130,12 @@ drawLogEntryModal = (clickedDayElem) => {
        data: {"data": entryData},
        success: function(data) {
          let updatedEntry = data.data;
+         console.log(updatedEntry);
          updateElemDataset(activeEntryElem, updatedEntry);
          updateEntryTitle(activeEntryElem.dataset);
          updateModalPoints(updatedEntry);
+         entryContestField.val(updatedEntry.contest);
+
          entryInfoField.text('Updated entry');
          entryInfoField.show();
          console.log('Updated entry: ' + JSON.stringify(updatedEntry));
@@ -146,6 +157,7 @@ drawLogEntryModal = (clickedDayElem) => {
          entryDeleteButton.prop("disabled", false);
          entryInfoField.text('Added new entry');
          entryInfoField.show();
+         entryContestField.val(updatedEntry.contest);
          console.log('Created entry: ' + JSON.stringify(createdEntry));
        },
        error: function(error) {
@@ -166,6 +178,7 @@ drawLogEntryModal = (clickedDayElem) => {
      type: 'DELETE',
      success: function(data) {
        activeEntryElem.remove();
+       entrySaveButton.prop("disabled", true);
        entryDeleteButton.prop("disabled", true);
        entryInfoField.text('Deleted entry');
        entryInfoField.show();
@@ -195,6 +208,8 @@ addEntryElem = (entryData) => {
   updateEntryTitle(entryData);
   updateModalPoints(entryData);
   updateRowHeight(entryDate);
+
+  entryContestField.val(entryData.contest);
 };
 
 
@@ -213,7 +228,6 @@ updateRowHeight = (entryDate) => {
     totalHeight += elem.clientHeight;
   }
 
-  // console.log(entryDate + ' | ' + thisRowHeightPx + ' | ' + minRowHeightPx + ' | ' + (totalHeight + 100));
   if (thisRowHeightPx < (totalHeight + 100)) {
     thisRow.style.height = Math.max( minRowHeightPx, (totalHeight + 100) ) + 'px';
   } // else { shrink row -- probably unecessary }
@@ -225,8 +239,6 @@ updateRowHeight = (entryDate) => {
  */
 updateEntryTitle = (entryData) => {
   if (entryData.title && entryData.title.length > 0) {
-    // console.log('in updateEntryTitle, activeEntryElem: ');
-    // console.log( activeEntryElem);
     activeEntryElem.textContent = entryData.title;
   } else {
     activeEntryElem.textContent = entryData.activity + " (" + entryData.points + " pts)";
@@ -343,8 +355,14 @@ $(document).ready(function() {
     if (event.target.classList.contains('fc-day') || event.target.classList.contains('fc-day-top')) {
       const entryDate = event.target.dataset.date;
       const dayElem = document.querySelectorAll(`.fc-day[data-date='${entryDate}']`)[0];
+
+      // If user is also log owner, indicate that day elems are clickable
+      // Need to access current user
+      // const logOwner = event.target.dataset.user;
+      // if (logOwner === userEmail) {
       $('.fc-day.active').removeClass('active');
       dayElem.className += ' active';
+      // }
     }
   });
   // Mouseout doesn't look great because of html inside cell (see: .fc-content-skeleton)

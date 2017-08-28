@@ -23,10 +23,42 @@ exports.renderContest = (req, res) => {
 
 
 /**
+ * Get first contest whose start/end dates bound today's date
+ */
+getActiveContestName = (logEntry) => {
+  const logEntryDate = moment(logEntry.date);
+  let contestName = '';
+  let contestInfo;
+  let contestStartDate;
+  let contestEndDate;
+  let userTeamInfo = userTeams[logEntry.user];
+
+  // Only assign to contest if user is a competitor
+  if ( !(userTeamInfo && userTeamInfo.isCompetitor) ) {
+    return '';
+  }
+
+  for ( contestName of Object.keys(contestDefinitions) ) {
+    contestInfo = contestDefinitions[contestName];
+    contestStartDate = moment(contestInfo.startDate);
+    contestEndDate = moment(contestInfo.endDate);
+    // console.log(logEntryDate, contestStartDate, contestEndDate);
+
+    // Return contest if date is between startDate (inclusive) and endDate (NOT inclusive)
+    // Credit: https://stackoverflow.com/a/29495647
+    if ( logEntryDate.isBetween(contestStartDate, contestEndDate, 'days', '[)') ) {
+      console.log(logEntryDate, contestName)
+      return contestName;
+    }
+  }
+}
+
+
+/**
  * Aggregate user-level point totals to team-level point totals
  * Note: Want to show points = 0 rather than omitting team entirely
  * Note: Would have been a lot easier with a relational DB
- * Refactor using Javascript map() ???
+ * Refactor using map() ???
  */
 getContestResults = (callback) => {
   const contestUserQuery = [

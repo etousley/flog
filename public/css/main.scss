@@ -83,11 +83,11 @@ textarea {
   padding-top: 2em;
   resize: both;
   overflow: auto;
-  cursor: pointer;
 }
 
 // Hack to treat .fc-day:hover and .fc-day-top:hover the same way with JS
 .fc-day.active {
+  cursor: pointer;
   background-color: #d9edf7 !important;
 }
 

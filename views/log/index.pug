@@ -45,6 +45,9 @@ block content
                 span.input-group-addon#entry-duration-unit-field minutes
               span.top-buffer-md
                 textarea.form-control#entry-description-field(placeholder="Description (optional)")
+              .input-group.top-buffer-md
+                span.input-group-addon Contest
+                input.form-control#entry-contest-field(type="text" disabled="True" placeholder="(none)")
               .alert-container
                 .alert.alert-danger#entry-error-field(role="alert")
                 .alert.alert-info#entry-info-field(role="alert")
@@ -58,16 +61,19 @@ block content
           //- Read-only modal for non-owners
           else 
             .modal-body
-              .input-group.top-buffer-md-sm
-                span.input-group-addon.entry-date {{ date }}
-                .form-control.entry-title(type="text" placeholder="Title of log entry (optional)")
-              .input-group.top-buffer-md-sm
-                .entry-activity(placeholder="Activity type...")
-              .input-group.top-buffer-md-sm 
-                .entry-duration-value(type="text" placeholder="Minutes (e.g. 20)")
-                .input-group-addon minutes
-              span.top-buffer-md-sm
-                .entry-description(placeholder="Description (optional)")
+              button.btn.btn-default#entry-activity-field(type="button" disabled="True")
+              .input-group.top-buffer-md
+                input.form-control#entry-duration-value-field(type="text" placeholder="Minutes (e.g. 20)" disabled="True")
+                span.input-group-addon#entry-duration-unit-field minutes
+              span.top-buffer-md
+                textarea.form-control#entry-description-field(placeholder="Description (optional)" disabled="True")
+              .input-group.top-buffer-md
+                span.input-group-addon Contest
+                input.form-control#entry-contest-field(type="text" disabled="True" placeholder="(none)")
+              .alert-container
+                .alert.alert-danger#entry-error-field(role="alert")
+                .alert.alert-info#entry-info-field(role="alert")
+                .alert.alert-success#entry-points-field(role="alert")
             .modal-footer
               button.btn.btn-secondary(type="button", data-dismiss="modal") Close
             
