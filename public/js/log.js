@@ -46,7 +46,7 @@ fillLogEntries = () => {
   const startDate = dayElems[0].dataset.date;
   const endDate = dayElems[dayElems.length - 1].dataset.date;
   const getLogEntriesUrl = '/api/log?' + jQuery.param({
-    "userEmail": ownerEmail,
+    "user": ownerEmail,
     "from": startDate,
     "to": endDate
   });
@@ -115,7 +115,7 @@ drawLogEntryModal = (clickedDayElem) => {
    let entryData = {
      "date": entryDateField.text(),
      "title": entryTitleField.val(),
-     "userEmail": ownerEmail,
+     "user": ownerEmail,
      "activity": entryActivityField.html(),
      "description": entryDescriptionField.val(),
      "durationValue": entryDurationValueField.val(),
@@ -335,8 +335,8 @@ selectActivity = (activityElem) => {
 $(document).ready(function() {
   setCSRFToken($('meta[name="csrf-token"]').attr('content'));
 
-  console.log('ownerEmail: ' + ownerEmail);
-  console.log('userEmail: ' + userEmail);
+  // console.log('ownerEmail: ' + ownerEmail);
+  // console.log('userEmail: ' + userEmail);
 
   modal.modal('hide');
 

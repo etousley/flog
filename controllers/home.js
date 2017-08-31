@@ -11,13 +11,10 @@ exports.index = (req, res) => {
  const tomorrow = moment(today).add(1, 'days').format(dateMask);
  const entriesTodayQuery = {"date": { "$gte": today, "$lt": tomorrow } };
 
- console.log(entriesTodayQuery);
-
  LogEntry.find(entriesTodayQuery, function(err, result) {
    if (err) {
      res.status(500).send({"error": err})
    } else {
-     console.log(result);
      res.render('home', {
        title: 'Home',
        user: req.user,
