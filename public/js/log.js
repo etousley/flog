@@ -131,7 +131,7 @@ drawLogEntryModal = (clickedDayElem) => {
        data: {"data": entryData},
        success: function(data) {
          let updatedEntry = data.data;
-         console.log(updatedEntry);
+        //  console.log(updatedEntry);
          updateElemDataset(activeEntryElem, updatedEntry);
          updateEntryTitle(activeEntryElem.dataset);
          updateModalPoints(updatedEntry);
@@ -139,7 +139,7 @@ drawLogEntryModal = (clickedDayElem) => {
 
          entryInfoField.text('Updated entry');
          entryInfoField.show();
-         console.log('Updated entry: ' + JSON.stringify(updatedEntry));
+        //  console.log('Updated entry: ' + JSON.stringify(updatedEntry));
        },
        error: function(error) {
          entryErrorField.text(error.status + " error: " + error.statusText);
@@ -159,7 +159,7 @@ drawLogEntryModal = (clickedDayElem) => {
          entryInfoField.text('Added new entry');
          entryInfoField.show();
          entryContestField.val(updatedEntry.contest);
-         console.log('Created entry: ' + JSON.stringify(createdEntry));
+        //  console.log('Created entry: ' + JSON.stringify(createdEntry));
        },
        error: function(error) {
          entryErrorField.text(error.status + " error: " + error.statusText);
@@ -184,7 +184,7 @@ drawLogEntryModal = (clickedDayElem) => {
        entryInfoField.text('Deleted entry');
        entryInfoField.show();
        entryPointsField.hide();
-       console.log('Deleted entry');
+      //  console.log('Deleted entry');
      },
      error: function(error) {
        entryErrorField.text(error.status + " error: " + error.statusText);
