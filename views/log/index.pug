@@ -1,7 +1,7 @@
 extends ../layout
 
 block content
-  h2 #{logOwner.email.split("@")[0]}'s Log
+  h2 #{owner.email.split("@")[0]}'s Log
   
   //- pre 
   //-   each val, key in activities
@@ -18,12 +18,12 @@ block content
           
           .modal-header
               h4.modal-title Log Entry: 
-                span#entry-date-field {{ date }}
+                span#entry-date-field
               button.close(type="button", data-dismiss="modal", aria-label="Close")
                 span(aria-hidden="true") ×
                 
           //- Editable modal for log owner
-          if user.email === logOwner.email
+          if user.email === owner.email
             .modal-body
               //- .input-group.top-buffer-md-sm
               //-   span.input-group-addon.entry-date-field {{ date }}
@@ -76,6 +76,11 @@ block content
                 .alert.alert-success#entry-points-field(role="alert")
             .modal-footer
               button.btn.btn-secondary(type="button", data-dismiss="modal") Close
-            
+    
+    //- There's got to be a better way to do this.
+    .hidden
+      #user-email= user.email
+      #owner-email= owner.email
+    
   script
     include ../../public/js/log.js

@@ -41,7 +41,7 @@ exports.renderLog = (req, res) => {
   res.render('log/index', {
     title: 'My Log',
     user: req.user,
-    logOwner: {email: req.url.split("/").slice(-1)[0]},
+    owner: {email: req.url.split("/").slice(-1)[0]},
     activities: lookups.activitiesSortedAlpha
   });
 };

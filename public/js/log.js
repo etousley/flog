@@ -14,7 +14,8 @@ let entryPointsField = $('#entry-points-field');
 let entrySaveButton = $('#entry-save-btn');
 let entryDeleteButton = $('#entry-delete-btn');
 let activeEntryElem = undefined;
-let userEmail = undefined;
+let ownerEmail = $('#owner-email').text();
+let userEmail = $('#user-email').text();
 
 
 /**
@@ -45,7 +46,7 @@ fillLogEntries = () => {
   const startDate = dayElems[0].dataset.date;
   const endDate = dayElems[dayElems.length - 1].dataset.date;
   const getLogEntriesUrl = '/api/log?' + jQuery.param({
-    "user": userEmail,
+    "userEmail": ownerEmail,
     "from": startDate,
     "to": endDate
   });
@@ -58,15 +59,15 @@ fillLogEntries = () => {
 
 
 /**
- * Render and display modal to reflect data (date, user, existing activities)
+ * Render and display modal to reflect data (date, userEmail, existing activities)
  */
 drawLogEntryModal = (clickedDayElem) => {
   const activityName = activeEntryElem.dataset.activity;
   let targetActivity = undefined;
-  let logOwner = activeEntryElem.dataset.user;
+  let logOwner = activeEntryElem.dataset.userEmail;
 
-  // If non-owner clicks an empty date, nothing should happen
-  // if (userEmail !== logOwner && !activityName) {
+  // If non-ownerEmail clicks an empty date, nothing should happen
+  // if (ownerEmail !== logOwner && !activityName) {
   //   return;
   // }
 
@@ -83,8 +84,8 @@ drawLogEntryModal = (clickedDayElem) => {
     // Activity has already been saved
     entryActivityField.val(activeEntryElem.dataset.activity);
     entryActivityField.text(activeEntryElem.dataset.activity);
-  } else if (logOwner && userEmail === logOwner) {
-    // Log owner is saving activity for the first time
+  } else if (logOwner && ownerEmail === logOwner) {
+    // Log ownerEmail is saving activity for the first time
     targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
     entryDurationUnitField.val(targetActivity.dataset.durationUnit) + 's';
     updateElemDataset(entryActivityField, targetActivity.dataset);
@@ -114,7 +115,7 @@ drawLogEntryModal = (clickedDayElem) => {
    let entryData = {
      "date": entryDateField.text(),
      "title": entryTitleField.val(),
-     "user": userEmail,
+     "userEmail": ownerEmail,
      "activity": entryActivityField.html(),
      "description": entryDescriptionField.val(),
      "durationValue": entryDurationValueField.val(),
@@ -286,7 +287,7 @@ selectActivity = (activityElem) => {
   updateElemDataset(entryActivityField, activityElem.dataset);
 
   if (activityElem.dataset.durationUnit.includes('minute')) {
-    // If it's a minutes-based activity, user should enter duration
+    // If it's a minutes-based activity, userEmail should enter duration
     entryDurationValueField.prop('disabled', false);
   } else {
     // Otherwise, populate the default value and leave it disabled
@@ -334,7 +335,8 @@ selectActivity = (activityElem) => {
 $(document).ready(function() {
   setCSRFToken($('meta[name="csrf-token"]').attr('content'));
 
-  userEmail = window.location.href.replace("#", "").split('/').slice(-1)[0];
+  console.log('ownerEmail: ' + ownerEmail);
+  console.log('userEmail: ' + userEmail);
 
   modal.modal('hide');
 
@@ -350,21 +352,21 @@ $(document).ready(function() {
     fillLogEntries();
   });
 
-  // Trigger hover state for day when user hovers over day-top
+  // Trigger hover state for day when userEmail hovers over day-top
   $(document.body).on('mouseover', '.fc-day, .fc-day-top', function (event) {
     if (event.target.classList.contains('fc-day') || event.target.classList.contains('fc-day-top')) {
       const entryDate = event.target.dataset.date;
       const dayElem = document.querySelectorAll(`.fc-day[data-date='${entryDate}']`)[0];
 
-      // If user is also log owner, indicate that day elems are clickable
-      // Need to access current user
-      // const logOwner = event.target.dataset.user;
-      // if (logOwner === userEmail) {
-      $('.fc-day.active').removeClass('active');
-      dayElem.className += ' active';
-      // }
+      // If userEmail is also log ownerEmail, indicate that day elems are clickable
+      // Can fudge this in the console :P
+      if (userEmail === ownerEmail) {
+        $('.fc-day.active').removeClass('active');
+        dayElem.className += ' active';
+      }
     }
   });
+
   // Mouseout doesn't look great because of html inside cell (see: .fc-content-skeleton)
   // $(document.body).on('mouseout', '.fc-day, .fc-day-top', function (event) {
   //     $('.fc-day.active').removeClass('active');
@@ -373,8 +375,10 @@ $(document).ready(function() {
   // Show log entry when date is clicked
   $(document.body).on('click touch', '.fc-day, .fc-day-top, .log-entry-btn', function (event) {
     event.stopPropagation();  // Need this to click on an entry button inside a clickable day cell
+    if (userEmail === ownerEmail || event.target.classList.contains('log-entry-btn')) {
       activeEntryElem = event.target;
       drawLogEntryModal(event.target);
+    }
   });
 
   // Save log entry when Save button is clicked
