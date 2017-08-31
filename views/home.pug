@@ -1,21 +1,22 @@
 extends layout
 
 block content
-  h1 flog: A Reading Plus fitness log
+  h1 Reading Plus Fitness Log
   p.lead At least it's not spreadsheets.
   hr
     
   .row
     .col-sm-6
-      h2 Welcome to flog!
+      h3 Welcome to your log!
         
       if user !== undefined && user.email.endsWith('@readingplus.com')
         //- p Log entries created today: #{entriesToday}
-        .btn-group
+        .btn-group.margin-top-md
           a.btn.btn-primary(href='/log/' + user.email) View/edit your log
           a.btn.btn-primary(href='/contest') View contest results
-        .top-buffer-lg
-          h4 Today's entries:
+          
+        .margin-top-lg
+          h3 Today's entries:
           table.table
             thead
               tr

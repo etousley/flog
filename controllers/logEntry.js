@@ -133,7 +133,7 @@ exports.createLogEntry = (req, res) => {
         res.statusMessage = err.toString();
         res.status(500).end();
       } else {
-        console.log('created: ' + JSON.stringify(createdEntry));
+        // console.log('created: ' + JSON.stringify(createdEntry));
         res.send({ "data": createdEntry });
       }
     });
@@ -175,7 +175,7 @@ exports.updateLogEntry = (req, res) => {
         res.status(500).end();
       } else {
         res.send({ "data": updatedEntry });
-        console.log('updated:' + JSON.stringify(updatedEntry));
+        // console.log('updated:' + JSON.stringify(updatedEntry));
       }
     });
   } else {
@@ -202,7 +202,7 @@ exports.deleteLogEntry = (req, res) => {
           res.status(500).end();
         } else {
           res.send( { "data": { "deleted": {"_id": id} } } );
-          console.log('deleted:' + JSON.stringify({"_id": id}));
+          // console.log('deleted:' + JSON.stringify({"_id": id}));
         }
       });
     } else {

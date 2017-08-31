@@ -25,7 +25,7 @@ block content
           //- Editable modal for log owner
           if user.email === owner.email
             .modal-body
-              //- .input-group.top-buffer-md-sm
+              //- .input-group.margin-top-md-sm
               //-   span.input-group-addon.entry-date-field {{ date }}
               //- input.form-control#entry-title-field(type="text" placeholder="Title of log entry (optional)")
               //- Required dropdown container
@@ -40,12 +40,12 @@ block content
                     each attrs, name in activities
                       li
                         a.dropdown-item(href="#" data-duration-value=attrs.durationValue data-duration-unit=attrs.durationUnit data-points=attrs.points data-category=attrs.category)= name
-              .input-group.top-buffer-md
+              .input-group.margin-top-md
                 input.form-control#entry-duration-value-field(type="text" placeholder="Minutes (e.g. 20)")
                 span.input-group-addon#entry-duration-unit-field minutes
-              span.top-buffer-md
+              span.margin-top-md
                 textarea.form-control#entry-description-field(placeholder="Description (optional)")
-              .input-group.top-buffer-md
+              .input-group.margin-top-md
                 span.input-group-addon Contest
                 input.form-control#entry-contest-field(type="text" disabled="True" placeholder="(none)")
               .alert-container
@@ -62,12 +62,12 @@ block content
           else 
             .modal-body
               button.btn.btn-default#entry-activity-field(type="button" disabled="True")
-              .input-group.top-buffer-md
+              .input-group.margin-top-md
                 input.form-control#entry-duration-value-field(type="text" placeholder="Minutes (e.g. 20)" disabled="True")
                 span.input-group-addon#entry-duration-unit-field minutes
-              span.top-buffer-md
+              span.margin-top-md
                 textarea.form-control#entry-description-field(placeholder="Description (optional)" disabled="True")
-              .input-group.top-buffer-md
+              .input-group.margin-top-md
                 span.input-group-addon Contest
                 input.form-control#entry-contest-field(type="text" disabled="True" placeholder="(none)")
               .alert-container
