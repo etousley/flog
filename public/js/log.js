@@ -158,7 +158,7 @@ drawLogEntryModal = (clickedDayElem) => {
          entryDeleteButton.prop("disabled", false);
          entryInfoField.text('Added new entry');
          entryInfoField.show();
-         entryContestField.val(updatedEntry.contest);
+         entryContestField.val(createdEntry.contest);
         //  console.log('Created entry: ' + JSON.stringify(createdEntry));
        },
        error: function(error) {
