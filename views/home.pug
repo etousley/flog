@@ -6,7 +6,7 @@ block content
   hr
     
   .row
-    .col-sm-6
+    .col-sm-8
       h3 Welcome to your log!
         
       if user !== undefined && user.email.endsWith('@readingplus.com')
@@ -20,12 +20,14 @@ block content
           table.table
             thead
               tr
+                th created at
                 th user
                 th activity
                 th points
             tbody
               each entry in entriesToday
                 tr
+                  td #{moment(entry.created).format('hh:mm a')}
                   td  
                     a(href="/log/" + entry.user) #{entry.user}
                   td #{entry.activity}

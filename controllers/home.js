@@ -18,7 +18,8 @@ exports.index = (req, res) => {
      res.render('home', {
        title: 'Home',
        user: req.user,
-       entriesToday: result
+       entriesToday: result,
+       moment: moment  // Formatting timestamps in template
      });
    }
  });

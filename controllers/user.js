@@ -424,10 +424,10 @@ exports.userTeams = {
   "jason@readingplus.com": {"team": "Kelly's Team", "isCaptain": 0, "isCompetitor": 1},
   "Helen.Tot@readingplus.com": {"team": "Kelly's Team", "isCaptain": 0, "isCompetitor": 1},
   "alicia.gagne@readingplus.com": {"team": "Kelly's Team", "isCaptain": 0, "isCompetitor": 1},
-  "joel.brown@readingplus.com": {"team": "Joel's Team", "isCaptain": 1, "isCompetitor": 1},
-  "vincent.bouchard@readingplus.com": {"team": "Joel's Team", "isCaptain": 0, "isCompetitor": 1},
-  "mike.morgan@readingplus.com": {"team": "Joel's Team", "isCaptain": 0, "isCompetitor": 1},
-  "carl.severance@readingplus.com": {"team": "Joel's Team", "isCaptain": 0, "isCompetitor": 1},
-  "marybeth.nuovo@readingplus.com": {"team": "Joel's Team", "isCaptain": 0, "isCompetitor": 1},
-  "christopher.sandvik@readingplus.com": {"team": "Joel's Team", "isCaptain": 0, "isCompetitor": 1}
+  "joel.brown@readingplus.com": {"team": "Health Hounds", "isCaptain": 1, "isCompetitor": 1},
+  "vincent.bouchard@readingplus.com": {"team": "Health Hounds", "isCaptain": 0, "isCompetitor": 1},
+  "mike.morgan@readingplus.com": {"team": "Health Hounds", "isCaptain": 0, "isCompetitor": 1},
+  "carl.severance@readingplus.com": {"team": "Health Hounds", "isCaptain": 0, "isCompetitor": 1},
+  "marybeth.nuovo@readingplus.com": {"team": "Health Hounds", "isCaptain": 0, "isCompetitor": 1},
+  "christopher.sandvik@readingplus.com": {"team": "Health Hounds", "isCaptain": 0, "isCompetitor": 1}
 };

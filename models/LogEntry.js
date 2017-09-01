@@ -15,8 +15,16 @@ const logEntrySchema = new mongoose.Schema({
   title: String,
   description: String,
   team: String,
-  contest: String
+  contest: String,
 }, { timestamps: true });
+
+
+// Virtual created timestamp generated from id
+// Credit: https://stackoverflow.com/a/28458723
+logEntrySchema.virtual('created').get( function () {
+  if (this["_created"]) return this["_created"];
+  return this["_created"] = this._id.getTimestamp();
+});
 
 
 // Model is named 'LogEntry', but collection name is 'logEntries'
