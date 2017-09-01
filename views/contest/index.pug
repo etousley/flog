@@ -23,7 +23,8 @@ block content
               tr
                 td #{index + 1}
                 td #{team.name}
-                td #{team.captain}
+                td 
+                  a(href="/log/" + team.captain) #{team.captain.replace("@readingplus.com", "")}
                 td #{team.points}
       
     .row
@@ -42,7 +43,7 @@ block content
                 td #{index + 1}
                   
                 td 
-                  a(href="/log/" + user.name) #{user.name}
+                  a(href="/log/" + user.name) #{user.name.replace("@readingplus.com", "")}
                 td #{user.team}
                 td #{user.points}
     hr

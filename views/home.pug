@@ -27,9 +27,9 @@ block content
             tbody
               each entry in entriesToday
                 tr
-                  td #{moment(entry.created).format('hh:mm a')}
+                  td #{moment(entry.created).local().format('hh:mm a')}
                   td  
-                    a(href="/log/" + entry.user) #{entry.user}
+                    a(href="/log/" + entry.user) #{entry.user.replace("@readingplus.com", "")}
                   td #{entry.activity}
                   td #{entry.points}
         
