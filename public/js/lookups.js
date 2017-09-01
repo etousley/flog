@@ -2,10 +2,10 @@ const moment = require('moment');
 
 
 exports.contests = {
-  "Test Contest": {
-    "startDate": moment('2017-08-01'),
-    "endDate": moment("2017-09-01")
-  },
+  // "Test Contest": {
+  //   "startDate": moment('2017-08-01'),
+  //   "endDate": moment("2017-09-01")
+  // },
   "September 2017 Contest": {
     "startDate": moment("2017-09-01"),
     "endDate": moment("2017-10-01")
@@ -351,7 +351,8 @@ exports.healthyBehaviors = {
   "Eating 2 Fruits": {
     "category": "Healthy Behaviors",
     "points": 2,
-		"duration": {"value": 1, "unit": "day"}
+    "durationValue": 1,
+		"durationUnit": "day"
   },
   "Eating 3 vegetables": {
     "category": "Healthy Behaviors",

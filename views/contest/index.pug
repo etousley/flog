@@ -16,12 +16,14 @@ block content
             tr
               th team rank
               th team
+              th captain
               th team points
           tbody
             each team, index in contest.teams
               tr
                 td #{index + 1}
                 td #{team.name}
+                td #{team.captain}
                 td #{team.points}
       
     .row
