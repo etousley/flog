@@ -136,19 +136,19 @@ app.get('/contest', passportConfig.isAuthenticated, contestController.renderCont
  * REST API routes
  */
 // Get all log entries. Can filter with query string, see controller method
-app.get('/api/log', passportConfig.isAuthenticated, logEntryController.getLogEntries);
+app.get('/api/log-entry', passportConfig.isAuthenticated, logEntryController.getLogEntries);
 
 // Get log entry by id
-app.get('/api/log/:id', passportConfig.isAuthenticated, logEntryController.getLogEntry);
+app.get('/api/log-entry/:id', passportConfig.isAuthenticated, logEntryController.getLogEntry);
 
 // Update a single log entry
-app.put('/api/log/:id', passportConfig.isAuthenticated, logEntryController.updateLogEntry);
+app.put('/api/log-entry/:id', passportConfig.isAuthenticated, logEntryController.updateLogEntry);
 
 // Create a new log entry
-app.post('/api/log', passportConfig.isAuthenticated, logEntryController.createLogEntry);
+app.post('/api/log-entry', passportConfig.isAuthenticated, logEntryController.createLogEntry);
 
 // Delete a single log entry
-app.delete('/api/log/:id', passportConfig.isAuthenticated, logEntryController.deleteLogEntry);
+app.delete('/api/log-entry/:id', passportConfig.isAuthenticated, logEntryController.deleteLogEntry);
 
 // Get all activity definitions
 app.get('/api/activity', passportConfig.isAuthenticated, logEntryController.getActivityDefinitions);

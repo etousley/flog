@@ -45,7 +45,7 @@ fillLogEntries = () => {
   const dayElems = $('.fc-day')
   const startDate = dayElems[0].dataset.date;
   const endDate = dayElems[dayElems.length - 1].dataset.date;
-  const getLogEntriesUrl = '/api/log?' + jQuery.param({
+  const getLogEntriesUrl = '/api/log-entry?' + jQuery.param({
     "user": ownerEmail,
     "from": startDate,
     "to": endDate
@@ -127,7 +127,7 @@ drawLogEntryModal = (clickedDayElem) => {
    if (activeEntryElem.dataset._id !== undefined) {
      // If there's already an _id, do a PUT (update)
      $.ajax({
-       url: '/api/log/' + activeEntryElem.dataset._id,
+       url: '/api/log-entry/' + activeEntryElem.dataset._id,
        type: 'PUT',
        data: {"data": entryData},
        success: function(data) {
@@ -150,7 +150,7 @@ drawLogEntryModal = (clickedDayElem) => {
    } else {
      // If there's no _id, do a POST (create)
      $.ajax({
-       url: '/api/log/',
+       url: '/api/log-entry/',
        type: 'POST',
        data: {"data": entryData},
        success: function(data) {
@@ -176,7 +176,7 @@ drawLogEntryModal = (clickedDayElem) => {
   */
  deleteLogEntry = () => {
    $.ajax({
-     url: '/api/log/' + activeEntryElem.dataset._id,
+     url: '/api/log-entry/' + activeEntryElem.dataset._id,
      type: 'DELETE',
      success: function(data) {
        activeEntryElem.remove();

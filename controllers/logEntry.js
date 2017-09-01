@@ -50,7 +50,7 @@ exports.renderLog = (req, res) => {
 /**
  * REST API endpoint
  * GET all log entries. Can filter with query string, e.g.:
- *  /api/log?user=user@domain.com&from=2017-05-01&to=2017-06-01
+ *  /api/log-entry?user=user@domain.com&from=2017-05-01&to=2017-06-01
  */
 exports.getLogEntries = (req, res) => {
   let user = req.query.user;  // user's email address
