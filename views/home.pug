@@ -28,7 +28,7 @@ block content
             tbody
               each entry in entriesToday
                 tr
-                  td #{moment.utc(entry.created).local().format('hh:mm a')}
+                  td.local-ts(data-utc-ts=entry.created) Localizing time...
                   td  
                     a(href="/log/" + entry.user) #{entry.user.replace("@readingplus.com", "")}
                   td #{entry.activity}
@@ -45,10 +45,5 @@ block content
             i.fa.fa-google-plus
             | Sign in with Google
 
-      //- p
-      //-   a.btn.btn-default(href='#', role='button') View details »
-    //- .col-sm-6
-    //-   h2 Heading
-    //-   p Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-    //-   p
-    //-     a.btn.btn-default(href='#', role='button') View details »
+  script
+    include ../public/js/home.js

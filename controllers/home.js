@@ -10,6 +10,8 @@ exports.index = (req, res) => {
  const today = moment().startOf('day').format(dateMask);
  const tomorrow = moment(today).add(1, 'days').format(dateMask);
  const entriesTodayQuery = {"date": { "$gte": today, "$lt": tomorrow } };
+ const utcOffset = moment().utcOffset();
+ console.log('utcOffset: ' + utcOffset);
 
  LogEntry.find(entriesTodayQuery, function(err, result) {
    if (err) {
@@ -18,8 +20,7 @@ exports.index = (req, res) => {
      res.render('home', {
        title: 'Home',
        user: req.user,
-       entriesToday: result,
-       moment: moment  // Formatting timestamps in template
+       entriesToday: result
      });
    }
  });
