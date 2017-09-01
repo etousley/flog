@@ -23,14 +23,19 @@ block content
                 th created at
                 th user
                 th activity
+                th duration
                 th points
             tbody
               each entry in entriesToday
                 tr
-                  td #{moment(entry.created).local().format('hh:mm a')}
+                  td #{moment.utc(entry.created).local().format('hh:mm a')}
                   td  
                     a(href="/log/" + entry.user) #{entry.user.replace("@readingplus.com", "")}
                   td #{entry.activity}
+                  if entry.durationUnit === "minute"
+                    td #{entry.durationValue} min
+                  else  
+                    td
                   td #{entry.points}
         
       else  
