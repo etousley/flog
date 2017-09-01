@@ -84,6 +84,7 @@ drawLogEntryModal = (clickedDayElem) => {
     // Activity has already been saved
     entryActivityField.val(activeEntryElem.dataset.activity);
     entryActivityField.text(activeEntryElem.dataset.activity);
+    entryDurationUnitField.text(activeEntryElem.dataset.durationUnit);
   } else if (logOwner && ownerEmail === logOwner) {
     // Log ownerEmail is saving activity for the first time
     targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
