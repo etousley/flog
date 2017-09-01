@@ -84,11 +84,11 @@ drawLogEntryModal = (clickedDayElem) => {
     // Activity has already been saved
     entryActivityField.val(activeEntryElem.dataset.activity);
     entryActivityField.text(activeEntryElem.dataset.activity);
-    entryDurationUnitField.text(activeEntryElem.dataset.durationUnit);
+    entryDurationUnitField.text(activeEntryElem.dataset.durationUnit + 's');
   } else if (logOwner && ownerEmail === logOwner) {
     // Log ownerEmail is saving activity for the first time
     targetActivity = $(".dropdown-item:contains('" + activityName + "')")[0];
-    entryDurationUnitField.val(targetActivity.dataset.durationUnit) + 's';
+    entryDurationUnitField.val(targetActivity.dataset.durationUnit + 's');
     updateElemDataset(entryActivityField, targetActivity.dataset);
     entryActivityField.val(targetActivity);
     entryActivityField.text(activityName);
