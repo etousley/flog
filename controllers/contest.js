@@ -120,8 +120,15 @@ getContestResults = (callback) => {
         }
 
         // Loop through complete user (userTeam) dictionary
-        for ( let userEmail of Object.keys(userTeams) ) {
+        for ( let userEmail of Object.keys(contest.users) ) {
           let userTeamInfo = userTeams[userEmail];
+
+          // Omit non-competitors
+          if (!userTeamInfo.isCompetitor) {
+            delete contest.users[userEmail];
+            continue;
+          }
+
           Object.assign(contest.users[userEmail], {"points": 0});
 
           // Get user points for this contest; update user + team contest results
