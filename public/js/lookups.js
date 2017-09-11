@@ -303,12 +303,6 @@ exports.activities3pt = {
 		"durationValue": 20,
 		"durationUnit": "minute"
   },
-  "Team sports (soccer, etc.)": {
-    "category": "Activities",
-    "points": 3,
-		"durationValue": 20,
-		"durationUnit": "minute"
-  },
   "Stair climbing": {
     "category": "Activities",
     "points": 3,
