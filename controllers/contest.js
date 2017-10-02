@@ -56,6 +56,7 @@ getActiveContestName = (logEntry) => {
 
 /**
  * Get teams object
+ * Helpful to return an independent object if mutating
  */
 getTeams = () => {
   let teams = {};
@@ -73,6 +74,9 @@ getTeams = () => {
 }
 
 
+/**
+ * Convert object to list
+ */
 objToList = (obj, keyName = "key") => {
   let list = [];
   for (let key of Object.keys(obj)) {
@@ -82,6 +86,7 @@ objToList = (obj, keyName = "key") => {
   }
   return list;
 }
+
 
 /**
  * Aggregate user-level point totals to team-level point totals
@@ -108,10 +113,12 @@ getContestResults = (callback) => {
         let contestInfo = contestDefinitions[contestName];
         let contest = {
           'name': contestName,
-          'startDate': contestInfo.startDate.format(dateMask),
-          'endDate': contestInfo.endDate.format(dateMask),
-          'teams': teams,
-          'users': userTeams
+          'startDate': contestInfo.startDate,
+          'endDate': contestInfo.endDate,
+          'startDateFormatted': contestInfo.startDate.format(dateMask),
+          'endDateFormatted': contestInfo.endDate.format(dateMask),
+          'teams': getTeams(),   // Needs to be independent clone
+          'users': JSON.parse(JSON.stringify(userTeams))  // Needs to be independent clone
         };
 
         // Ignore contests that haven't started yet
@@ -150,6 +157,7 @@ getContestResults = (callback) => {
       }
 
       // Sort contests by date, descending
+      // console.log(contests);
       contests.sort( (a, b) => {
         return b.startDate - a.startDate;
       });

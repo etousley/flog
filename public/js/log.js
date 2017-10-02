@@ -309,7 +309,7 @@ selectActivity = (activityElem) => {
 /**
  * Validate entry; return list of errors
  */
- getEntryErrors = (entryData) => {
+getEntryErrors = (entryData) => {
   const requiredFields = ['date', 'activity', 'durationValue', 'durationUnit'];
   const numFields = ['durationValue'];
   let errors = [];
