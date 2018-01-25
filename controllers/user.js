@@ -385,7 +385,7 @@ exports.userTeams = {
   "kim.mcgimsey@readingplus.com": {"team": "Get Fit or Die Tryin'", "isCaptain": 0, "isCompetitor": 1},
   "mark@readingplus.com": {"team": "Mark's Team", "isCaptain": 1, "isCompetitor": 1},
   "roger.harris@readingplus.com": {"team": "Mark's Team", "isCaptain": 0, "isCompetitor": 1},
-  "donna.Freisinger@readingplus.com": {"team": "Mark's Team", "isCaptain": 0, "isCompetitor": 1},
+  "donna.freisinger@readingplus.com": {"team": "Mark's Team", "isCaptain": 0, "isCompetitor": 1},
   "carrie.ladd@readingplus.com": {"team": "Mark's Team", "isCaptain": 0, "isCompetitor": 1},
   "brett@readingplus.com": {"team": "Mark's Team", "isCaptain": 0, "isCompetitor": 1},
   "jonah.allibone@readingplus.com": {"team": "Mark's Team", "isCaptain": 0, "isCompetitor": 1},
