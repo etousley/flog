@@ -416,6 +416,7 @@ exports.userTeams = {
   "jennifer@readingplus.com": {"team": "Rick's Team", "isCaptain": 0, "isCompetitor": 1},
   "john.ferrara@readingplus.com": {"team": "Rick's Team", "isCaptain": 0, "isCompetitor": 1},
   "jeff.laughlin@readingplus.com": {"team": "Rick's Team", "isCaptain": 0, "isCompetitor": 1},
+  "chandler.escude@readingplus.com": {"team": "Rick's Team", "isCaptain": 0, "isCompetitor": 1},
   "Michael.Lascelles@readingplus.com": {"team": "Michael's Team", "isCaptain": 1, "isCompetitor": 1},
   "Ishmael.Ahmed@readingplus.com": {"team": "Michael's Team", "isCaptain": 0, "isCompetitor": 1},
   "jeff.pascoe@readingplus.com": {"team": "Michael's Team", "isCaptain": 0, "isCompetitor": 1},
