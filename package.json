@@ -37,7 +37,7 @@
     "nodemailer": "^3.1.7",
     "passport": "0.3.2",
     "passport-google-oauth": "^1.0.0",
-    "pug": "^2.0.0-beta6",
+    "pug": "^2.0.4",
     "request": "^2.78.0",
     "validator": "^7.0.0"
   },
